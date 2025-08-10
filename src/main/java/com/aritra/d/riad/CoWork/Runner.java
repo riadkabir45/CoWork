@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 import com.aritra.d.riad.CoWork.service.TaskService;
 
 @Component
@@ -14,6 +15,6 @@ public class Runner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        taskService.createTask("Sample Task", true, "Daily");
+        taskService.createTask("Sample Task", true, 1, TaskIntervalType.DAYS);
     }
 }

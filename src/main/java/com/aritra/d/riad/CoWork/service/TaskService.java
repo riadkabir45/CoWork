@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 import com.aritra.d.riad.CoWork.model.Tasks;
 import com.aritra.d.riad.CoWork.repository.TasksRepository;
 
@@ -15,11 +16,12 @@ public class TaskService {
     @Autowired
     TasksRepository tasksRepository;
 
-    public Tasks createTask(String taskName, boolean isNumericalTask, String taskInterval) {
+    public Tasks createTask(String taskName, boolean isNumericalTask, int taskInterval, TaskIntervalType taskIntervalType) {
         Tasks task = new Tasks();
         task.setTaskName(taskName);
         task.setNumericalTask(isNumericalTask);
         task.setTaskInterval(taskInterval);
+        task.setTaskIntervalType(taskIntervalType);
         return createTask(task);
     }
 
