@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build with Maven
-      run: ./mvnw clean verify
+      run: ./mvnw clean verify -Dspring.profiles.active=prod
 
     - name: Compile (quick error check)
       run: ./mvnw compile -Dspring.profiles.active=prod
