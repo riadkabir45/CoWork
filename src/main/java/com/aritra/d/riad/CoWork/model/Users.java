@@ -104,7 +104,7 @@ enum UserStatus {
 @Entity
 public class Users {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String googleId;
     private String email;
