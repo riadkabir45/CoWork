@@ -15,8 +15,8 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
+          POSTGRES_USER: "postgres.ubkhyjduerbjudoirhcx"
+          POSTGRES_PASSWORD: "#%xa&LecdTkFQ5s"
         ports:
           - 5432:5432
         options: >-
