@@ -23,6 +23,11 @@ jobs:
       - name: Build with Maven
         run: ./mvnw clean package -DskipTests
 
+      - name: Save Dockerfile and Jar to TMP
+        run: |
+          cp Dockerfile /tmp/Dockerfile
+          cp target/app.jar /tmp/app.jar
+
       - name: Prepare production branch
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -31,10 +36,10 @@ jobs:
           git checkout -B production origin/production || git checkout --orphan production
           git rm -rf . || true
 
-      - name: Copy JAR and Dockerfile
+      - name: Restore Dockerfile and JAR
         run: |
-          cp target/app.jar app.jar
-          cp Dockerfile Dockerfile
+          cp /tmp/Dockerfile Dockerfile
+          cp /tmp/app.jar app.jar
 
       - name: Commit and push to production branch
         run: |
