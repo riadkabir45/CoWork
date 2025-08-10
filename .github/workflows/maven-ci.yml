@@ -24,4 +24,4 @@ jobs:
       run: ./mvnw clean verify
 
     - name: Compile (quick error check)
-      run: ./mvnw compile
+      run: ./mvnw compile -Dspring.profiles.active=prod
