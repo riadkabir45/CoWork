@@ -1,5 +1,6 @@
 package com.aritra.d.riad.CoWork.controller;
 
+import com.aritra.d.riad.CoWork.dto.TaskUpdateDTO;
 import com.aritra.d.riad.CoWork.model.TaskUpdates;
 import com.aritra.d.riad.CoWork.service.TaskUpdatesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/task-updates")
@@ -17,8 +19,16 @@ public class TaskUpdatesController {
 
 
     @GetMapping("/")
-    public List<TaskUpdates> getAllTaskUpdates() {
-        return taskUpdatesService.getAllTaskUpdates();
+    public List<TaskUpdateDTO> getAllTaskUpdates() {
+        return taskUpdatesService.getAllTaskUpdates().stream().map(taskUpdate -> {
+            TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
+            taskUpdateDTO.setId(taskUpdate.getId());
+            taskUpdateDTO.setUpdatedBy(taskUpdate.getUpdatedBy());
+            taskUpdateDTO.setUpdateTimestamp(taskUpdate.getUpdateTimestamp());
+            taskUpdateDTO.setUpdateDescription(taskUpdate.getUpdateDescription());
+            taskUpdateDTO.setTaskId(taskUpdate.getTask().getId());
+            return taskUpdateDTO;
+        }).collect(Collectors.toList());
     }
 
 
