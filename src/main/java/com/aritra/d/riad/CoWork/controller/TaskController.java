@@ -22,7 +22,7 @@ public class TaskController {
     private TaskService taskService;
 
 
-    @GetMapping("/list")
+    @GetMapping("/")
     public List<Tasks> listTasks() {
         return taskService.listTasks();
     }

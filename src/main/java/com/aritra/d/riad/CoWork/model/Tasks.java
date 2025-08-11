@@ -3,6 +3,7 @@ package com.aritra.d.riad.CoWork.model;
 import java.util.Set;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -30,5 +31,6 @@ public class Tasks {
     private int taskInterval;
     private TaskIntervalType taskIntervalType;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<TaskUpdates> updates;
 }

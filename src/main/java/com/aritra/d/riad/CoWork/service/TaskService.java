@@ -10,6 +10,9 @@ import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 import com.aritra.d.riad.CoWork.model.Tasks;
 import com.aritra.d.riad.CoWork.repository.TasksRepository;
 
+import jakarta.transaction.Transactional;
+
+@Transactional
 @Component
 public class TaskService {
 
