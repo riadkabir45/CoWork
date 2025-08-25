@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aritra.d.riad.CoWork.dto.TaskInstanceDTO;
+import com.aritra.d.riad.CoWork.dto.TaskStatusDTO;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.service.TaskInstanceService;
 
@@ -65,5 +66,28 @@ public class TaskInstancesController {
     @DeleteMapping("/{id}")
     public void deleteTaskInstance(@PathVariable String id) {
         taskInstanceService.deleteTaskInstance(id);
+    }
+
+    @GetMapping("/userId/{id}")
+    public List<TaskStatusDTO> getTaskInstancesByUserId(@PathVariable String id) {
+        return taskInstanceService.listTaskInstancesByUserId(id).stream().map(taskInstance -> {
+            TaskStatusDTO dto = new TaskStatusDTO();
+            dto.setId(taskInstance.getId());
+            dto.setName(taskInstance.getTask().getTaskName());
+            if(taskInstance.getTask().isNumericalTask())
+                dto.setTaskType("Numerical");
+            else
+                dto.setTaskType("Yes/No");
+            dto.setInterval(taskInstance.getTaskInterval());
+            dto.setIntervalType(taskInstance.getTaskIntervalType().toString());
+            if(taskInstance.getTaskUpdates().size() > 0)
+                dto.setLastUpdated(taskInstance.getTaskUpdates().get(taskInstance.getTaskUpdates().size() - 1).getUpdateTimestamp());
+            else
+                dto.setLastUpdated(null);
+            dto.setUpdates(taskInstance.getTaskUpdates().stream()
+                .map(update -> update.getUpdateDescription())
+                .collect(Collectors.toList()));
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

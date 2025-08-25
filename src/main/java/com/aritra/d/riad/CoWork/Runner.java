@@ -28,6 +28,6 @@ public class Runner implements CommandLineRunner {
     public void run(String... args) {
         Tasks task = taskService.createTask("Sample Task", true);
         TaskInstances taskInstance = taskInstanceService.createTaskInstances(1, TaskIntervalType.DAYS, "User45", task);
-        taskUpdatesService.createTaskUpdates(taskInstance, "Test creation");
+        taskUpdatesService.createTaskUpdates(taskInstance, "10");
     }
 }
