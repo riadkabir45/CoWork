@@ -44,4 +44,9 @@ public class TaskInstanceService {
     public List<TaskInstances> listTaskInstances() {
         return taskInstancesRepository.findAll();
     }
+
+    public List<TaskInstances> listTaskInstancesByUserId(String userId) {
+        return taskInstancesRepository.findByUserId(userId);
+    }
+
 }

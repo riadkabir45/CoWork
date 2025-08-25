@@ -1,6 +1,6 @@
 package com.aritra.d.riad.CoWork.model;
 
-import java.util.Set;
+import java.util.List;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 
@@ -33,5 +33,5 @@ public class TaskInstances {
     private Tasks task;
 
     @OneToMany(mappedBy = "taskInstances", fetch = FetchType.LAZY)
-    private Set<TaskUpdates> taskUpdates;
+    private List<TaskUpdates> taskUpdates;
 }
