@@ -14,17 +14,15 @@ import jakarta.transaction.Transactional;
 
 @Transactional
 @Component
-public class TaskService {
+public class TasksService {
 
     @Autowired
     TasksRepository tasksRepository;
 
-    public Tasks createTask(String taskName, boolean isNumericalTask, int taskInterval, TaskIntervalType taskIntervalType) {
+    public Tasks createTask(String taskName, boolean isNumericalTask) {
         Tasks task = new Tasks();
         task.setTaskName(taskName);
         task.setNumericalTask(isNumericalTask);
-        task.setTaskInterval(taskInterval);
-        task.setTaskIntervalType(taskIntervalType);
         return createTask(task);
     }
 
@@ -34,7 +32,7 @@ public class TaskService {
     }
 
     public Tasks getTaskById(String id) {
-        Optional<Tasks> task = tasksRepository.findTasksById(id);
+        Optional<Tasks> task = tasksRepository.findById(id);
         return task.orElseThrow(() -> new RuntimeException("Task not found"));
     }
 

@@ -11,8 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TaskUpdateDTO {
     private String id;
-    private String updatedBy;
     private String updateTimestamp;
     private String updateDescription;
-    private String taskId;
+    private String taskInstances;
 }
