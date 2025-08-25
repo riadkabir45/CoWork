@@ -23,10 +23,9 @@ public class TaskUpdatesController {
         return taskUpdatesService.getAllTaskUpdates().stream().map(taskUpdate -> {
             TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
             taskUpdateDTO.setId(taskUpdate.getId());
-            taskUpdateDTO.setUpdatedBy(taskUpdate.getUpdatedBy());
-            taskUpdateDTO.setUpdateTimestamp(taskUpdate.getUpdateTimestamp());
+            taskUpdateDTO.setUpdateTimestamp(taskUpdate.getUpdateTimestamp().toString());
             taskUpdateDTO.setUpdateDescription(taskUpdate.getUpdateDescription());
-            taskUpdateDTO.setTaskId(taskUpdate.getTask().getId());
+            taskUpdateDTO.setTaskInstances(taskUpdate.getTaskInstances().getId());
             return taskUpdateDTO;
         }).collect(Collectors.toList());
     }
@@ -39,7 +38,7 @@ public class TaskUpdatesController {
     }
 
 
-    @PostMapping
+    @PostMapping("/")
     public TaskUpdates createTaskUpdate(@RequestBody TaskUpdates taskUpdates) {
         return taskUpdatesService.createTaskUpdate(taskUpdates);
     }
