@@ -24,7 +24,7 @@ public class TaskController {
     private TasksService taskService;
 
 
-    @GetMapping("/")
+    @GetMapping
     public List<TaskDTO> listTasks() {
         return taskService.listTasks().stream().map(task -> {
             TaskDTO dto = new TaskDTO();
@@ -54,7 +54,7 @@ public class TaskController {
         return null;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public Tasks createTask(@RequestBody Tasks task) {
         return taskService.createTask(task);
     }
