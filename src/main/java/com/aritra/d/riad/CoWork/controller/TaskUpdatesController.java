@@ -18,7 +18,7 @@ public class TaskUpdatesController {
     private TaskUpdatesService taskUpdatesService;
 
 
-    @GetMapping("/")
+    @GetMapping
     public List<TaskUpdateDTO> getAllTaskUpdates() {
         return taskUpdatesService.getAllTaskUpdates().stream().map(taskUpdate -> {
             TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
@@ -38,7 +38,7 @@ public class TaskUpdatesController {
     }
 
 
-    @PostMapping("/")
+    @PostMapping
     public TaskUpdates createTaskUpdate(@RequestBody TaskUpdates taskUpdates) {
         return taskUpdatesService.createTaskUpdate(taskUpdates);
     }

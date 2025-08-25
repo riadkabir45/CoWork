@@ -23,7 +23,7 @@ public class TaskInstancesController {
     @Autowired
     private TaskInstanceService taskInstanceService;
 
-    @GetMapping("/")
+    @GetMapping
     public List<TaskInstanceDTO> getAllTaskInstances() {
         return taskInstanceService.listTaskInstances().stream().map(taskInstance -> {
             TaskInstanceDTO dto = new TaskInstanceDTO();
@@ -57,7 +57,7 @@ public class TaskInstancesController {
         return null;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public TaskInstances createTaskInstance(@RequestBody TaskInstances taskInstance) {
         return taskInstanceService.createTaskInstance(taskInstance);
     }
