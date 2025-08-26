@@ -4,8 +4,8 @@
 all:
 	./mvnw spring-boot:run
 
-sync:
-	./mvnw clean install
+build:
+	./mvnw clean verify package
 
 purge:
 	./mvnw dependency:purge-local-repository
