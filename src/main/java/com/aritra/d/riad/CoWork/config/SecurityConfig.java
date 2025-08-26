@@ -4,6 +4,7 @@ import com.aritra.d.riad.CoWork.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,7 +21,8 @@ public class SecurityConfig {
         });
         
         http.authorizeHttpRequests(authz -> {
-            authz.anyRequest().permitAll();
+            authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().
+            anyRequest().authenticated();
         });
         
         http.addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
