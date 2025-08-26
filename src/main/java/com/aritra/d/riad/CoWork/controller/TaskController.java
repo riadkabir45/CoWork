@@ -1,7 +1,6 @@
 package com.aritra.d.riad.CoWork.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,30 +25,14 @@ public class TaskController {
 
     @GetMapping
     public List<TaskDTO> listTasks() {
-        return taskService.listTasks().stream().map(task -> {
-            TaskDTO dto = new TaskDTO();
-            dto.setId(task.getId());
-            dto.setTaskName(task.getTaskName());
-            dto.setNumericalTask(task.isNumericalTask());
-            if (task.getInstances() != null) {
-                dto.setInstances(task.getInstances().stream().map(u -> u.getId()).collect(Collectors.toSet()));
-            }
-            return dto;
-        }).collect(Collectors.toList());
+        return taskService.generateTaskDTOList(taskService.listTasks());
     }
 
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable String id) {
         Tasks task = taskService.getTaskById(id);
         if (task != null) {
-            TaskDTO dto = new TaskDTO();
-            dto.setId(task.getId());
-            dto.setTaskName(task.getTaskName());
-            dto.setNumericalTask(task.isNumericalTask());
-            if (task.getInstances() != null) {
-                dto.setInstances(task.getInstances().stream().map(u -> u.getId()).collect(Collectors.toSet()));
-            }
-            return dto;
+            return taskService.generateTaskDTO(task);
         }
         return null;
     }

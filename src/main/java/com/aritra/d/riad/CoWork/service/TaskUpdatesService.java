@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aritra.d.riad.CoWork.dto.TaskDTO;
+import com.aritra.d.riad.CoWork.dto.TaskUpdateDTO;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.TaskUpdates;
 import com.aritra.d.riad.CoWork.repository.TaskUpdatesRepository;
@@ -40,4 +42,20 @@ public class TaskUpdatesService {
         TaskUpdates taskUpdates = getTaskUpdateById(id);
         taskUpdatesRepository.delete(taskUpdates);
     }
+
+    public TaskUpdateDTO generateTaskUpdateDTO(TaskUpdates taskUpdate) {
+        TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
+        taskUpdateDTO.setId(taskUpdate.getId());
+        taskUpdateDTO.setUpdateTimestamp(taskUpdate.getUpdateTimestamp().toString());
+        taskUpdateDTO.setUpdateDescription(taskUpdate.getUpdateDescription());
+        taskUpdateDTO.setTaskInstances(taskUpdate.getTaskInstances().getId());
+        return taskUpdateDTO;
+    }
+
+    public List<TaskUpdateDTO> generateTaskUpdateDTOList(List<TaskUpdates> taskUpdates) {
+        return taskUpdates.stream()
+            .map(this::generateTaskUpdateDTO)
+            .toList();
+    }
+
 }
