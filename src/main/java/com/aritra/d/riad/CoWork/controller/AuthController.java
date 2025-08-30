@@ -35,7 +35,6 @@ public class AuthController {
         }
 
         try {
-            String email = (String) request.getAttribute("userEmail");
             Claims claims = (Claims) request.getAttribute("userClaims");
             
             // Sync user with database
@@ -47,7 +46,10 @@ public class AuthController {
             response.put("email", user.getEmail());
             response.put("firstName", user.getFirstName());
             response.put("lastName", user.getLastName());
-            response.put("role", user.getRole());
+            response.put("primaryRole", user.getPrimaryRole());
+            response.put("roles", user.getRoles().stream()
+                .map(role -> role.getName())
+                .toList());
             response.put("status", user.getStatus());
             response.put("profilePicture", user.getProfilePicture());
             response.put("mentorshipEligible", user.getMentorshipEligible());
@@ -70,7 +72,6 @@ public class AuthController {
         }
 
         try {
-            String email = (String) request.getAttribute("userEmail");
             Claims claims = (Claims) request.getAttribute("userClaims");
             
             // Get user from database
@@ -104,7 +105,10 @@ public class AuthController {
             response.put("lastName", updatedUser.getLastName());
             response.put("bio", updatedUser.getBio());
             response.put("location", updatedUser.getLocation());
-            response.put("role", updatedUser.getRole());
+            response.put("primaryRole", updatedUser.getPrimaryRole());
+            response.put("roles", updatedUser.getRoles().stream()
+                .map(role -> role.getName())
+                .toList());
             response.put("status", updatedUser.getStatus());
             response.put("mentorshipEligible", updatedUser.getMentorshipEligible());
             
