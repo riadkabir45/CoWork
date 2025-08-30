@@ -27,19 +27,20 @@ public class SecurityConfig {
         });
         
         http.authorizeHttpRequests(authz -> {
-            authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().
-              .requestMatchers("/api/auth/**").permitAll()
-              .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR")
-              .requestMatchers("/api/tasks/**").hasAnyRole("REGISTERED", "MENTOR", "MODERATOR", "ADMIN")
-            anyRequest().authenticated();
+            authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/", "/test/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR")
+                .requestMatchers("/api/tasks/**").hasAnyRole("REGISTERED", "MENTOR", "MODERATOR", "ADMIN")
+                .anyRequest().authenticated();
         });
         
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
-        http.sessionManagement(sessionz -> {
-              session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-          });
-        
+
+        http.sessionManagement(session -> {
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        });
+
         http.formLogin(formLoginz -> {
               formLoginz.disable();
           });
