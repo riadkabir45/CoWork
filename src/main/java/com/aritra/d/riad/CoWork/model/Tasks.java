@@ -12,16 +12,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@RequiredArgsConstructor
+@Data
+@NoArgsConstructor
 public class Tasks {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
