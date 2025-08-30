@@ -17,6 +17,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -41,14 +44,16 @@ public class JwtAuthenticationFilter implements Filter {
         
         try {
             String authHeader = httpRequest.getHeader("Authorization");
+            
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
-                
+   
+                // Validate and parse the JWT token
                 if (validateToken(token)) {
                     Claims claims = parseToken(token);
                     String userId = claims.getSubject();
                     String email = claims.get("email", String.class);
-                    
+
                     // Sync user from JWT to database
                     Users user = userService.syncUserFromJWT(claims);
                     
@@ -61,24 +66,19 @@ public class JwtAuthenticationFilter implements Filter {
                     UsernamePasswordAuthenticationToken authentication = 
                         new UsernamePasswordAuthenticationToken(email, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    
-                    // Add user info as request attributes for easy access in controllers
+
+                    // Optionally, set user info as request attributes
                     httpRequest.setAttribute("userId", userId);
                     httpRequest.setAttribute("userEmail", email);
                     httpRequest.setAttribute("userClaims", claims);
                     httpRequest.setAttribute("authenticatedUser", user);
-                    httpRequest.setAttribute("authenticated", true);
-                } else {
-                    httpRequest.setAttribute("authenticated", false);
                 }
-            } else {
-                httpRequest.setAttribute("authenticated", false);
             }
         } catch (Exception e) {
             System.err.println("JWT Authentication error: " + e.getMessage());
-            httpRequest.setAttribute("authenticated", false);
+            SecurityContextHolder.clearContext();
         }
-        
+
         chain.doFilter(request, response);
     }
     

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/task-updates")
@@ -18,17 +17,9 @@ public class TaskUpdatesController {
     private TaskUpdatesService taskUpdatesService;
 
 
-    @GetMapping("/")
+    @GetMapping
     public List<TaskUpdateDTO> getAllTaskUpdates() {
-        return taskUpdatesService.getAllTaskUpdates().stream().map(taskUpdate -> {
-            TaskUpdateDTO taskUpdateDTO = new TaskUpdateDTO();
-            taskUpdateDTO.setId(taskUpdate.getId());
-            taskUpdateDTO.setUpdatedBy(taskUpdate.getUpdatedBy());
-            taskUpdateDTO.setUpdateTimestamp(taskUpdate.getUpdateTimestamp());
-            taskUpdateDTO.setUpdateDescription(taskUpdate.getUpdateDescription());
-            taskUpdateDTO.setTaskId(taskUpdate.getTask().getId());
-            return taskUpdateDTO;
-        }).collect(Collectors.toList());
+        return taskUpdatesService.generateTaskUpdateDTOList(taskUpdatesService.getAllTaskUpdates());
     }
 
 
