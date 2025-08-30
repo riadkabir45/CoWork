@@ -1,5 +1,7 @@
 package com.aritra.d.riad.CoWork.security;
 
+import com.aritra.d.riad.CoWork.model.Users;
+import com.aritra.d.riad.CoWork.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,43 +11,62 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter implements Filter {
 
-    @Value("${supabase.jwt.secret:your-secret-key}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
+    @Autowired
+    private UserService userService;
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
         
         try {
             String authHeader = httpRequest.getHeader("Authorization");
-            
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 
-                // Validate and parse the JWT token
                 if (validateToken(token)) {
                     Claims claims = parseToken(token);
                     String userId = claims.getSubject();
                     String email = claims.get("email", String.class);
                     
+                    // Sync user from JWT to database
+                    Users user = userService.syncUserFromJWT(claims);
+                    
+                    // Create Spring Security authorities from user roles
+                    List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                        .collect(Collectors.toList());
+                    
+                    // Set authentication in Spring Security context
+                    UsernamePasswordAuthenticationToken authentication = 
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    
                     // Add user info as request attributes for easy access in controllers
                     httpRequest.setAttribute("userId", userId);
                     httpRequest.setAttribute("userEmail", email);
                     httpRequest.setAttribute("userClaims", claims);
+                    httpRequest.setAttribute("authenticatedUser", user);
                     httpRequest.setAttribute("authenticated", true);
                 } else {
                     httpRequest.setAttribute("authenticated", false);
@@ -78,9 +99,9 @@ public class JwtAuthenticationFilter implements Filter {
     private Claims parseToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 }
