@@ -1,6 +1,5 @@
 package com.aritra.d.riad.CoWork.model;
 
-import com.aritra.d.riad.CoWork.enumurator.UserRole;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,13 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,9 +34,14 @@ public class Users {
     @Column(name = "profile_picture", columnDefinition = "TEXT")
     private String profilePicture;
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role = UserRole.UNREGISTERED;
+    // Many users can have many roles (user can be both MENTOR and MODERATOR)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -72,5 +76,27 @@ public class Users {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    
+    // Helper methods for role checking
+    public boolean hasRole(String roleName) {
+        return roles.stream().anyMatch(role -> role.getName().equals(roleName));
+    }
+    
+    public boolean hasAnyRole(String... roleNames) {
+        for (String roleName : roleNames) {
+            if (hasRole(roleName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public String getPrimaryRole() {
+        if (hasRole("ADMIN")) return "ADMIN";
+        if (hasRole("MODERATOR")) return "MODERATOR";
+        if (hasRole("MENTOR")) return "MENTOR";
+        if (hasRole("REGISTERED")) return "REGISTERED";
+        return "UNREGISTERED";
     }
 }
