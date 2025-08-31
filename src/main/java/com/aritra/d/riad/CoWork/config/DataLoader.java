@@ -2,7 +2,6 @@ package com.aritra.d.riad.CoWork.config;
 
 import com.aritra.d.riad.CoWork.service.PermissionService;
 import com.aritra.d.riad.CoWork.service.RoleService;
-import com.aritra.d.riad.CoWork.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +20,11 @@ public class DataLoader implements CommandLineRunner {
     private RoleService roleService;
     @Autowired
     private PermissionService permissionService;
-    @Autowired
-    private UserService userService;
 
     @Override
     public void run(String... args) throws Exception {
         loadPermissions();
         loadRoles();
-        loadUser();
     }
     
     private void loadPermissions() {
@@ -67,11 +63,6 @@ public class DataLoader implements CommandLineRunner {
             new String[]{"READ_TASKS", "WRITE_TASKS", "DELETE_TASKS", "READ_USERS", 
                         "WRITE_USERS", "DELETE_USERS", "MANAGE_ROLES", "PROMOTE_MENTOR", 
                         "ASSIGN_MODERATOR", "BAN_USERS", "MODERATE_CONTENT"});
-    }
-
-    private void loadUser(){
-        userService.createUser("john.doe@example.com");
-        userService.createUser("jane.doe@example.com");
     }
     
 }
