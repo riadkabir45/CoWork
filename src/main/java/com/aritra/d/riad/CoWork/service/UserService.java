@@ -6,13 +6,10 @@ import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.RoleRepository;
 import com.aritra.d.riad.CoWork.repository.UsersRepository;
 import io.jsonwebtoken.Claims;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -69,16 +66,6 @@ public class UserService {
         user.setStatus(UserStatus.ACTIVE);
         user.setMentorshipEligible(false);
         
-        return usersRepository.save(user);
-    }
-
-    /**
-     * Create a new user
-     */
-    public Users createUser(String email) {
-        Users user = new Users();
-        user.setEmail(email);
-        user.setStatus(UserStatus.ACTIVE);
         return usersRepository.save(user);
     }
 
@@ -211,9 +198,5 @@ public class UserService {
         user.setRoles(roles);
         
         return usersRepository.save(user);
-    }
-
-    public List<Users> getAllUsers() {
-        return usersRepository.findAll();
     }
 }

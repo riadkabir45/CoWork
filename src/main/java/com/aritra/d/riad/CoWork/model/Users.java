@@ -4,6 +4,7 @@ import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class Users {
         }
         return false;
     }
-
+    
     public String getPrimaryRole() {
         if (hasRole("ADMIN")) return "ADMIN";
         if (hasRole("MODERATOR")) return "MODERATOR";
