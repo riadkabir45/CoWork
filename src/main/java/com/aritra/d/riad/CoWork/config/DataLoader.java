@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -23,13 +22,11 @@ public class DataLoader implements CommandLineRunner {
     private PermissionService permissionService;
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
         loadPermissions();
         loadRoles();
     }
     
-    @Transactional
     private void loadPermissions() {
         String[] permissions = {
             "READ_TASKS", "WRITE_TASKS", "DELETE_TASKS",
@@ -43,7 +40,6 @@ public class DataLoader implements CommandLineRunner {
         }
     }
     
-    @Transactional
     private void loadRoles() {
         // Create UNREGISTERED role
         roleService.createRoleIfNotExists("UNREGISTERED", "Users who haven't completed registration", 
