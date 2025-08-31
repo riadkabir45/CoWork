@@ -26,7 +26,7 @@ public class AdminController {
      * Get all users (admin and moderator only)
      */
     @GetMapping("/users")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> getAllUsers() {
         try {
             List<Users> users = usersRepository.findAll();
