@@ -28,13 +28,14 @@ public class SecurityConfig {
         
         http.authorizeHttpRequests(authz -> {
             authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/", "/test/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR")
-                .anyRequest().authenticated();
+                // .requestMatchers("/", "/test/**").permitAll()  <----------------------|
+                // .requestMatchers("/api/auth/**").permitAll()  <-----------------------|
+                // .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR")  <--  auth disabled due to fault
+                //.anyRequest().authenticated();  <--------------------------------------|
+                .anyRequest().permitAll(); //  <------------------ Allow all requests
         });
         
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  <--  auth disabled due to fault
 
         http.sessionManagement(session -> {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
