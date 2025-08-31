@@ -16,6 +16,6 @@ import java.util.Set;
 public class TaskDTO {
 	private String id;
 	private String taskName;
-	private boolean isNumericalTask;
+	private String type;
 	private Set<String> instances;
 }
