@@ -50,7 +50,12 @@ public class TasksService {
         TaskDTO dto = new TaskDTO();
         dto.setId(task.getId());
         dto.setTaskName(task.getTaskName());
-        dto.setNumericalTask(task.isNumericalTask());
+        if(task.isNumericalTask()) {
+            dto.setType("number");
+        }
+        else {
+            dto.setType("yesno");
+        }
         if (task.getInstances() != null) {
             dto.setInstances(task.getInstances().stream().map(u -> u.getId()).collect(Collectors.toSet()));
         }
