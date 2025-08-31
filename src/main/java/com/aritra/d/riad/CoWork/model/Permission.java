@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -22,9 +21,7 @@ public class Permission {
     
     @Column(columnDefinition = "TEXT")
     private String description;
-    
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    private Set<Role> roles;
+
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;

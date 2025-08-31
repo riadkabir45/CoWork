@@ -53,15 +53,11 @@ public class JwtAuthenticationFilter implements Filter {
 
                     // Sync user from JWT to database
                     Users user = userService.syncUserFromJWT(claims);
-
-                    System.out.println("Debug Start");
                     
                     // Create Spring Security authorities from user roles
                     List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                         .collect(Collectors.toList());
-
-                    System.out.println("Debug Stop");
                     
                     // Set authentication in Spring Security context
                     UsernamePasswordAuthenticationToken authentication = 
