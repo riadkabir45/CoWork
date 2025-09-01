@@ -36,6 +36,14 @@ public class ConnectionService {
     public boolean checkConnection(Users user1, Users user2) {
         return connectionRepository.findBySenderAndReceiver(user1, user2) != null;
     }
+    
+    public boolean checkConnectionRecv(Users user) {
+        return connectionRepository.findByReceiver(user) != null;
+    }
+
+    public boolean checkConnectionSender(Users user) {
+        return connectionRepository.findBySender(user) != null;
+    }
 
     public List<Connections> getUserConnections(Users recvUsers) {
         return connectionRepository.findByReceiver(recvUsers);
