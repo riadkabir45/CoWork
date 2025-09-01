@@ -1,5 +1,6 @@
 package com.aritra.d.riad.CoWork.service;
 
+import com.aritra.d.riad.CoWork.dto.SimpleUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import com.aritra.d.riad.CoWork.model.Role;
 import com.aritra.d.riad.CoWork.model.Users;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -198,5 +201,36 @@ public class UserService {
         user.setRoles(roles);
         
         return usersRepository.save(user);
+    }
+
+    public Users createUser(Users user) {
+        return usersRepository.save(user);
+    }
+
+    public Users createUser(String email, String firstName, String lastName) {
+        Users user = new Users();
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        return usersRepository.save(user);
+    }
+
+    public List<Users> getAllUsers() {
+        return usersRepository.findAll();
+    }
+
+    public List<SimpleUserDTO> getAllUsersDTO() {
+        List<Users> users = usersRepository.findAll();
+        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private SimpleUserDTO convertToDTO(Users user) {
+        SimpleUserDTO dto = new SimpleUserDTO();
+        dto.setId(user.getId().toString());
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setProfilePicture(user.getProfilePicture());
+        return dto;
     }
 }
