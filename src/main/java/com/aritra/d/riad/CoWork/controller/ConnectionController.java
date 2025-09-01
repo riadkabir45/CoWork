@@ -42,10 +42,10 @@ public class ConnectionController {
         var targetUser = targetUserOpt.get();
 
         if (connectionService.checkConnection(targetUser, authUser)) {
-            return ResponseEntity.badRequest().body("Connection already sent to you");
+            return ResponseEntity.ok().body("Warn: Connection already sent to you");
         }
         if (connectionService.checkConnection(authUser, targetUser)) {
-            return ResponseEntity.badRequest().body("Connection already exists");
+            return ResponseEntity.ok().body("Warn: Connection already exists");
         }
 
         connectionService.createConnection(authUser, targetUser);
