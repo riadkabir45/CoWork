@@ -1,14 +1,19 @@
 package com.aritra.d.riad.CoWork.service;
 
 import com.aritra.d.riad.CoWork.dto.SimpleUserDTO;
+import com.aritra.d.riad.CoWork.dto.SupabaseUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import com.aritra.d.riad.CoWork.model.Role;
 import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.RoleRepository;
 import com.aritra.d.riad.CoWork.repository.UsersRepository;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +22,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.tools.JavaFileObject;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@Slf4j
 @Service
 public class UserService {
 
@@ -25,6 +36,12 @@ public class UserService {
     
     @Autowired
     private RoleRepository roleRepository;
+
+    @Value("${app.supabase.url}")
+    private String supabaseUrl;
+
+    @Value("${app.supabase.service-role-key}")
+    private String supabaseServiceRoleKey;
 
     /**
      * Sync user from Supabase JWT claims to local database
@@ -207,6 +224,14 @@ public class UserService {
         return usersRepository.save(user);
     }
 
+    public Users createUser(SupabaseUserDTO dto) {
+        Users user = new Users();
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        return usersRepository.save(user);
+    }
+
     public Users createUser(String email, String firstName, String lastName) {
         Users user = new Users();
         user.setEmail(email);
@@ -232,5 +257,40 @@ public class UserService {
         dto.setLastName(user.getLastName());
         dto.setProfilePicture(user.getProfilePicture());
         return dto;
+    }
+
+    /**
+     * Pulls user list from Supabase Auth and logs them
+     */
+    public void loadSupabaseUsers() {
+        String url = supabaseUrl + "/auth/v1/admin/users";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("apikey", supabaseServiceRoleKey);
+        headers.set("Authorization", "Bearer " + supabaseServiceRoleKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(response.getBody());
+                JsonNode users = root.has("users") ? root.get("users") : root;
+                if (users.isArray()) {
+                    for (JsonNode userNode : users) {
+                        SupabaseUserDTO dto = mapper.treeToValue(userNode, SupabaseUserDTO.class);
+                        createUser(dto);
+                        log.info("Loaded user from Supabase: {} - {}", dto.getEmail(), dto.getFirstName() + " " + dto.getLastName());   
+                    }
+                }
+            } else {
+                log.error("Failed to fetch users from Supabase: {}", response.getStatusCode());
+            }
+        } catch (Exception e) {
+            log.error("Error fetching users from Supabase", e);
+        }
     }
 }
