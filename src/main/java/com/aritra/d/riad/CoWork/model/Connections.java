@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
-
+    
 @Data
 @Entity
 public class Connections {
