@@ -18,6 +18,9 @@ public class ConnectionService {
     @Autowired
     private ConnectionRepository connectionRepository;
 
+    @Autowired
+    private UserService userService;
+
     public void createConnection(Users sender, Users receiver) {
         Connections connection = new Connections();
         connection.setSender(sender);
@@ -47,8 +50,8 @@ public class ConnectionService {
     private ConnectionDTO generateConnectionsDTO(Connections connection) {
         ConnectionDTO dto = new ConnectionDTO();
         dto.setId(connection.getId());
-        dto.setSenderId(connection.getSender().getId().toString());
-        dto.setReceiverId(connection.getReceiver().getId().toString());
+        dto.setSender(userService.generateSimpleUserDTO(connection.getSender()));
+        dto.setReceiver(userService.generateSimpleUserDTO(connection.getReceiver()));
         dto.setAccepted(connection.isAccepted());
         dto.setUpDateTime(connection.getUpdatedAt());
         return dto; 
