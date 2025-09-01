@@ -27,7 +27,8 @@ public class SecurityConfig {
         });
         
         http.authorizeHttpRequests(authz -> {
-            authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            authz.requestMatchers("/swagger-ui/**","/v3/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/", "/test/**").permitAll()  // <-------------------------------|
                 .requestMatchers("/api/auth/**").permitAll()  // <--------------------------------|
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MODERATOR") // <--|  auth disabled due to fault
