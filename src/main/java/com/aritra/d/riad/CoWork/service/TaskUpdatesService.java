@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.aritra.d.riad.CoWork.dto.TaskDTO;
 import com.aritra.d.riad.CoWork.dto.TaskUpdateDTO;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.TaskUpdates;

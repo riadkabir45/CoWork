@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
-import com.aritra.d.riad.CoWork.model.TaskUpdates;
 import com.aritra.d.riad.CoWork.model.Tasks;
 import com.aritra.d.riad.CoWork.service.TaskInstanceService;
 import com.aritra.d.riad.CoWork.service.TasksService;
