@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +33,23 @@ public class ConnectionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authUserEmail = authentication.getName();
         return connectionService.getUserConnectionsDTO(userService.findByEmail(authUserEmail).orElseThrow());
+    }
+
+    @PostMapping
+    public ResponseEntity<String> acceptConnection(@RequestBody Connections connection) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = authentication.getName();
+        //userService.findByEmail(authUserEmail).ifPresent(connectionService::checkConnection);
+
+        var user = userService.findByEmail(authUserEmail);
+
+        if(user.isPresent()) {
+            if(connectionService.checkConnectionRecv(user.get())) {
+                connectionService.acceptConnection(connection);
+                return ResponseEntity.ok().body("Connection accepted");
+            }
+        }
+        return ResponseEntity.ok().body("Warn: Invalid connection request");
     }
 
     @GetMapping("/{email}")
