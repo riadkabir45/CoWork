@@ -28,6 +28,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         loadPermissions();
         loadRoles();
+        userService.loadSupabaseUsers();
         loadUsers();
     }
     
