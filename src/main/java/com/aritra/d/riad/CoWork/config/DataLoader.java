@@ -1,5 +1,7 @@
 package com.aritra.d.riad.CoWork.config;
 
+import com.aritra.d.riad.CoWork.model.Users;
+import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.PermissionService;
 import com.aritra.d.riad.CoWork.service.RoleService;
 import com.aritra.d.riad.CoWork.service.UserService;
@@ -23,6 +25,8 @@ public class DataLoader implements CommandLineRunner {
     private PermissionService permissionService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ConnectionService connectionService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -72,8 +76,12 @@ public class DataLoader implements CommandLineRunner {
 
     public void loadUsers() {
         userService.createUser("jan@example.com", "Jan", "Kowalski");
-        userService.createUser("ruby@example.com", "Ruby", "Smith");
+        Users ruby = userService.createUser("ruby@example.com", "Ruby", "Smith");
         userService.createUser("revere@example.com", "Revere", "Thee");
+
+        Users riad = userService.findByEmail("riadkabir45@gmail.com").orElseThrow();
+
+        connectionService.createConnection(ruby, riad);
     }
 
 }
