@@ -1,5 +1,7 @@
 package com.aritra.d.riad.CoWork.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aritra.d.riad.CoWork.dto.ConnectionDTO;
+import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
@@ -21,6 +25,13 @@ public class ConnectionController {
 
     @Autowired
     private ConnectionService connectionService;
+
+    @GetMapping
+    public List<ConnectionDTO> getAllConnections() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = authentication.getName();
+        return connectionService.getUserConnectionsDTO(userService.findByEmail(authUserEmail).orElseThrow());
+    }
 
     @GetMapping("/{email}")
     public ResponseEntity<String> createConnection(@PathVariable String email) {

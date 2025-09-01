@@ -1,8 +1,11 @@
 package com.aritra.d.riad.CoWork.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aritra.d.riad.CoWork.dto.ConnectionDTO;
 import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.ConnectionRepository;
@@ -29,5 +32,25 @@ public class ConnectionService {
 
     public boolean checkConnection(Users user1, Users user2) {
         return connectionRepository.findBySenderAndReceiver(user1, user2) != null;
+    }
+
+    public List<Connections> getUserConnections(Users recvUsers) {
+        return connectionRepository.findByReceiver(recvUsers);
+    }
+
+    public List<ConnectionDTO> getUserConnectionsDTO(Users recvUsers) {
+        return connectionRepository.findByReceiver(recvUsers).stream()
+                .map(this::generateConnectionsDTO)
+                .toList();
+    }
+
+    private ConnectionDTO generateConnectionsDTO(Connections connection) {
+        ConnectionDTO dto = new ConnectionDTO();
+        dto.setId(connection.getId());
+        dto.setSenderId(connection.getSender().getId().toString());
+        dto.setReceiverId(connection.getReceiver().getId().toString());
+        dto.setAccepted(connection.isAccepted());
+        dto.setUpDateTime(connection.getUpdatedAt());
+        return dto; 
     }
 }
