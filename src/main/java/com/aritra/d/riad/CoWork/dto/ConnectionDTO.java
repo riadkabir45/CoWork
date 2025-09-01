@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class ConnectionDTO {
     String id;
-    String senderId;
-    String receiverId;
+    SimpleUserDTO sender;
+    SimpleUserDTO receiver;
     boolean accepted;
     LocalDateTime upDateTime;
 }

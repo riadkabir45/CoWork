@@ -293,4 +293,14 @@ public class UserService {
             log.error("Error fetching users from Supabase", e);
         }
     }
+
+    public SimpleUserDTO generateSimpleUserDTO(Users user) {
+        SimpleUserDTO dto = new SimpleUserDTO();
+        dto.setId(user.getId().toString());
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setProfilePicture(user.getProfilePicture());
+        return dto;
+    }
 }
