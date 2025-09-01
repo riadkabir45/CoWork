@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aritra.d.riad.CoWork.dto.ConnectionDTO;
+import com.aritra.d.riad.CoWork.dto.SimpleUserDTO;
 import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.UserService;
@@ -34,6 +35,14 @@ public class ConnectionController {
         String authUserEmail = authentication.getName();
         return connectionService.getUserConnectionsDTO(userService.findByEmail(authUserEmail).orElseThrow());
     }
+
+    @GetMapping("/connected")
+    public List<SimpleUserDTO> getAllConnectedUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = authentication.getName();
+        return userService.generateSimpleUserDTO(connectionService.getAllConnectedUsers(userService.findByEmail(authUserEmail).orElseThrow()));
+    }
+    
 
     @PostMapping
     public ResponseEntity<String> acceptConnection(@RequestBody Connections connection) {

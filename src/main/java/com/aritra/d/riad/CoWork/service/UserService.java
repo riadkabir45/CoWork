@@ -303,4 +303,10 @@ public class UserService {
         dto.setProfilePicture(user.getProfilePicture());
         return dto;
     }
+
+    public List<SimpleUserDTO> generateSimpleUserDTO(List<Users> user) {
+        return user.stream()
+                .map(this::generateSimpleUserDTO)
+                .collect(Collectors.toList());
+    }
 }
