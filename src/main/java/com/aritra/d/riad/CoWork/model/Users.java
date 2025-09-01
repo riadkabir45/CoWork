@@ -4,7 +4,6 @@ import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;

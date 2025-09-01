@@ -1,7 +1,5 @@
 package com.aritra.d.riad.CoWork.dto;
 
-import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
