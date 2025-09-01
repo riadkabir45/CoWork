@@ -1,6 +1,7 @@
 package com.aritra.d.riad.CoWork.service;
 
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ public class ConnectionService {
         connectionRepository.save(connection);
     }
 
+    public Connections getConnectionById(String id) {
+        return connectionRepository.findById(id).orElse(null);
+    }
+
     public boolean checkConnection(Users user1, Users user2) {
         return connectionRepository.findBySenderAndReceiver(user1, user2) != null;
     }
@@ -52,6 +57,19 @@ public class ConnectionService {
 
     public List<ConnectionDTO> getUserConnectionsDTO(Users recvUsers) {
         return connectionRepository.findByReceiver(recvUsers).stream()
+                .map(this::generateConnectionsDTO)
+                .toList();
+    }
+
+    public List<Connections> getUserAcceptedConnections(Users recvUsers) {
+        return Stream.concat(
+                connectionRepository.findBySenderAndAccepted(recvUsers, true).stream(),
+                connectionRepository.findByReceiverAndAccepted(recvUsers, true).stream()
+        ).toList();
+    }
+
+    public List<ConnectionDTO> getUserAcceptedConnectionsDTO(Users recvUsers) {
+        return getUserAcceptedConnections(recvUsers).stream()
                 .map(this::generateConnectionsDTO)
                 .toList();
     }

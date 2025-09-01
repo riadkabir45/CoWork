@@ -19,8 +19,11 @@ import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/connections")
+@Slf4j
 public class ConnectionController {
 
     @Autowired
@@ -42,13 +45,21 @@ public class ConnectionController {
         String authUserEmail = authentication.getName();
         return userService.generateSimpleUserDTO(connectionService.getAllConnectedUsers(userService.findByEmail(authUserEmail).orElseThrow()));
     }
-    
 
-    @PostMapping
-    public ResponseEntity<String> acceptConnection(@RequestBody Connections connection) {
+    @GetMapping("/accepted")
+    public List<ConnectionDTO> getAllAcceptedConnections() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authUserEmail = authentication.getName();
-        //userService.findByEmail(authUserEmail).ifPresent(connectionService::checkConnection);
+        return connectionService.getUserAcceptedConnectionsDTO(userService.findByEmail(authUserEmail).orElseThrow());
+    }
+
+    @PostMapping
+    public ResponseEntity<String> acceptConnection(@RequestBody ConnectionDTO connectionDTO) {
+        Connections connection = connectionService.getConnectionById(connectionDTO.getId());
+
+        log.info("Accepting connection: {}", connection);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = authentication.getName();
 
         var user = userService.findByEmail(authUserEmail);
 
