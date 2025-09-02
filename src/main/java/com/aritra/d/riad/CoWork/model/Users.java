@@ -98,4 +98,8 @@ public class Users {
         if (hasRole("REGISTERED")) return "REGISTERED";
         return "UNREGISTERED";
     }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }
