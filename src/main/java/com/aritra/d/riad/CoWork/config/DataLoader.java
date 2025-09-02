@@ -2,6 +2,7 @@ package com.aritra.d.riad.CoWork.config;
 
 import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.service.ConnectionService;
+import com.aritra.d.riad.CoWork.service.NotificationService;
 import com.aritra.d.riad.CoWork.service.PermissionService;
 import com.aritra.d.riad.CoWork.service.RoleService;
 import com.aritra.d.riad.CoWork.service.UserService;
@@ -27,6 +28,8 @@ public class DataLoader implements CommandLineRunner {
     private UserService userService;
     @Autowired
     private ConnectionService connectionService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -82,6 +85,9 @@ public class DataLoader implements CommandLineRunner {
         Users riad = userService.findByEmail("riadkabir45@gmail.com").orElseThrow();
 
         connectionService.createConnection(ruby, riad);
+
+        notificationService.sendNotification(riad, "New connection", "You are now connected with " + ruby.getFullName());
+
     }
 
 }
