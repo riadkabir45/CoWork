@@ -72,6 +72,15 @@ public class ConnectionController {
         return ResponseEntity.ok().body("Warn: Invalid connection request");
     }
 
+    @GetMapping("/status/{id}")
+    public ResponseEntity<ConnectionDTO> getConnectionDetails(@PathVariable String id) {
+        Connections connection = connectionService.getConnectionById(id);
+        if (connection != null) {
+            return ResponseEntity.ok().body(connectionService.generateConnectionsDTO(connection));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/{email}")
     public ResponseEntity<String> createConnection(@PathVariable String email) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
