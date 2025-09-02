@@ -33,6 +33,7 @@ public class MessageController {
     }
     @GetMapping("/{connectionId}")
     public List<MessageDTO> getConnectionMessages(@PathVariable String connectionId) {
+        messageService.markMessagesAsRead(connectionId, userService.authUser());
         return messageService.getMessagesByConnectionIdDTO(connectionId);
     }
 

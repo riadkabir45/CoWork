@@ -101,4 +101,13 @@ public class MessageService {
         return null;
     }
 
+    public void markMessagesAsRead(String connectionId, Users authUser) {
+        Connections connections = connectionService.getConnectionById(connectionId);
+        List<Message> messages = messageRepository.findByConnectionsAndSenderNotAndSeenFalse(connections, authUser);
+        for (Message message : messages) {
+            message.setSeen(true);
+        }
+        messageRepository.saveAll(messages);
+    }
+
 }
