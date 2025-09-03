@@ -1,6 +1,9 @@
 package com.aritra.d.riad.CoWork.service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,6 +111,16 @@ public class MessageService {
             message.setSeen(true);
         }
         messageRepository.saveAll(messages);
+    }
+
+    public List<Message> getLatestUnreadMessagePerConnection() {
+    return messageRepository.findAll().stream()
+        .filter(message -> !message.isSeen())
+        .collect(Collectors.groupingBy(Message::getConnections,
+            Collectors.maxBy(Comparator.comparing(Message::getCreatedAt))))
+        .values().stream()
+        .flatMap(Optional::stream)
+        .collect(Collectors.toList());
     }
 
 }

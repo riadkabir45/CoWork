@@ -1,7 +1,6 @@
 package com.aritra.d.riad.CoWork.service;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,5 +91,9 @@ public class ConnectionService {
                 connectionsRecv.stream().map(Connections::getSender),
                 connectionSend.stream().map(Connections::getReceiver)
         ).distinct().toList();
+    }
+
+    public List<Connections> getPendingConnections() {
+        return connectionRepository.findByAccepted(false);
     }
 }

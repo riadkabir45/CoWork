@@ -17,4 +17,5 @@ public interface ConnectionRepository extends JpaRepository<Connections, String>
     List<Connections> findBySender(Users sender);
     Collection<Connections> findByReceiverAndAccepted(Users recvUsers, boolean b);
     Collection<Connections> findBySenderAndAccepted(Users recvUsers, boolean b);
+    List<Connections> findByAccepted(boolean b);
 }
