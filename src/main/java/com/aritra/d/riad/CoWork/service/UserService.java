@@ -129,14 +129,14 @@ public class UserService {
     /**
      * Get user by ID
      */
-    public Optional<Users> findById(UUID id) {
+    public Optional<Users> findById(String id) {
         return usersRepository.findById(id);
     }
     
     /**
      * Promote user to mentor role
      */
-    public Users promoteToMentor(UUID userId) {
+    public Users promoteToMentor(String userId) {
         Optional<Users> userOpt = usersRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
@@ -154,7 +154,7 @@ public class UserService {
     /**
      * Assign moderator role to user (admin only)
      */
-    public Users assignModerator(UUID userId) {
+    public Users assignModerator(String userId) {
         Optional<Users> userOpt = usersRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
@@ -171,7 +171,7 @@ public class UserService {
     /**
      * Remove moderator role from user (admin only)
      */
-    public Users removeModerator(UUID userId) {
+    public Users removeModerator(String userId) {
         Optional<Users> userOpt = usersRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
@@ -188,7 +188,7 @@ public class UserService {
     /**
      * Assign admin role to user (for initial setup)
      */
-    public Users assignAdmin(UUID userId) {
+    public Users assignAdmin(String userId) {
         Optional<Users> userOpt = usersRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
@@ -205,7 +205,7 @@ public class UserService {
     /**
      * Assign role to user by role name
      */
-    public Users assignRole(UUID userId, String roleName) {
+    public Users assignRole(String userId, String roleName) {
         Optional<Users> userOpt = usersRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new RuntimeException("User not found");
