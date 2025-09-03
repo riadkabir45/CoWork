@@ -10,9 +10,11 @@ import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.NotificationRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class NotificationService {
 
     @Autowired
@@ -41,11 +43,16 @@ public class NotificationService {
         return notificationRepository.countByRecipientAndRead(user, false);
     }
     public Notification sendNotification(Users user, String title, String message) {
-        Notification notification = new Notification();
-        notification.setRecipient(user);
-        notification.setMessage(message);
-        notification.setTitle(title);
-        return notificationRepository.save(notification);
+        try{
+            Notification notification = new Notification();
+            notification.setRecipient(user);
+            notification.setMessage(message);
+            notification.setTitle(title);
+            return notificationRepository.save(notification);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            log.error("Duplicate notification for user: {}", user.getEmail());
+        }
+        return null;
     }
 
     public List<Notification> getUserNotifications(Users user) {
@@ -64,6 +71,11 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow();
         notification.setRead(true);
         return notificationRepository.save(notification);
+    }
+
+    public void deleteSeenNotifications() {
+        List<Notification> seenNotifications = notificationRepository.findByRead(true);
+        notificationRepository.deleteAll(seenNotifications);
     }
 
 }

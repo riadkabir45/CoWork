@@ -29,6 +29,7 @@ public class TaskSchedulerService {
     public void runEveryFiveMinutes() {
         notifyUnseenMessages();
         notifyPendingConnections();
+        notificationService.deleteSeenNotifications();
         log.info("5 minute task complete");
     }
 
