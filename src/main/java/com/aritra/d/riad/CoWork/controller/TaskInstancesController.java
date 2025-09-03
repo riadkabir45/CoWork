@@ -12,16 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aritra.d.riad.CoWork.dto.TaskInstanceDTO;
-import com.aritra.d.riad.CoWork.dto.TaskStatusDTO;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.service.TaskInstanceService;
+import com.aritra.d.riad.CoWork.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/task-instances")
 public class TaskInstancesController {
     
     @Autowired
     private TaskInstanceService taskInstanceService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public List<TaskInstanceDTO> getAllTaskInstances() {
@@ -38,8 +43,13 @@ public class TaskInstancesController {
     }
 
     @PostMapping
-    public TaskInstances createTaskInstance(@RequestBody TaskInstances taskInstance) {
-        return taskInstanceService.createTaskInstance(taskInstance);
+    public TaskInstanceDTO createTaskInstance(@RequestBody TaskInstanceDTO taskInstance) {
+        return taskInstanceService.generateTaskInstanceDTO(
+            taskInstanceService.createTaskInstance(
+                taskInstance,
+                userService.authUser()
+            )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -48,7 +58,7 @@ public class TaskInstancesController {
     }
 
     @GetMapping("/userEmail/{email}")
-    public List<TaskStatusDTO> getTaskInstancesByUserEmail(@PathVariable String email) {
-        return taskInstanceService.generateTaskStatusDTOList(taskInstanceService.listTaskInstancesByUserEmail(email));
+    public List<TaskInstanceDTO> getTaskInstancesByUserEmail(@PathVariable String email) {
+        return taskInstanceService.generateTaskInstanceDTOList(taskInstanceService.listTaskInstancesByUserEmail(email));
     }
 }
