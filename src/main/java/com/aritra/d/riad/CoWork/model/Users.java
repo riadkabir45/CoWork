@@ -1,5 +1,6 @@
 package com.aritra.d.riad.CoWork.model;
 
+import com.aritra.d.riad.CoWork.dto.SupabaseUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,7 +18,8 @@ public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    
+    private String authId;
+
     @Column(name = "google_id")
     private String googleId;
     
@@ -90,7 +92,21 @@ public class Users {
         }
         return false;
     }
-    
+
+    public Users(String id,String email, String firstName, String lastName) {
+        this.id = UUID.fromString(id);
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public Users(SupabaseUserDTO dto) {
+        this.id = UUID.fromString(dto.getId());
+        this.email = dto.getEmail();
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+    }
+
     public String getPrimaryRole() {
         if (hasRole("ADMIN")) return "ADMIN";
         if (hasRole("MODERATOR")) return "MODERATOR";

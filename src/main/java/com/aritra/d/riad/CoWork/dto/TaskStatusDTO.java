@@ -18,6 +18,7 @@ public class TaskStatusDTO {
     private String taskType;
     private int interval;
     private String intervalType;
+    private int taskStreak;
     private LocalDateTime lastUpdated;
     private List<String> updates;
 }

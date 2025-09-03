@@ -1,18 +1,26 @@
 package com.aritra.d.riad.CoWork.config;
 
+import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
+import com.aritra.d.riad.CoWork.model.TaskInstances;
+import com.aritra.d.riad.CoWork.model.Tasks;
 import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.NotificationService;
 import com.aritra.d.riad.CoWork.service.PermissionService;
 import com.aritra.d.riad.CoWork.service.RoleService;
+import com.aritra.d.riad.CoWork.service.TaskInstanceService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import com.aritra.d.riad.CoWork.service.TasksService;
+import com.aritra.d.riad.CoWork.service.TaskUpdatesService;
 
 
 @Component
@@ -30,6 +38,12 @@ public class DataLoader implements CommandLineRunner {
     private ConnectionService connectionService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private TasksService taskService;
+    @Autowired
+    private TaskInstanceService taskInstanceService;
+    @Autowired
+    private TaskUpdatesService taskUpdatesService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -87,6 +101,13 @@ public class DataLoader implements CommandLineRunner {
         connectionService.createConnection(ruby, riad);
 
         notificationService.sendNotification(riad, "New connection", "You are now connected with " + ruby.getFullName());
+
+        Tasks task = taskService.createTask("Sample Task", true);
+        TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad.getAuthId(), task);
+        taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(15));
+        taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(7));
+        taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(3));
+        taskUpdatesService.createTaskUpdates(taskInstance, "1");
 
     }
 
