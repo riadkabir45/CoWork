@@ -80,7 +80,7 @@ public class TaskInstanceService {
         dto.setTaskUpdates(taskInstance.getTaskUpdates().stream()
             .map(update -> update.getUpdateDescription())
             .collect(Collectors.toList()));
-        dto.setTaskStreak(taskInstance.getTaskStreak());
+        dto.setTaskStreak(calculateTaskStreak(taskInstance));
         return dto;
     }
 
