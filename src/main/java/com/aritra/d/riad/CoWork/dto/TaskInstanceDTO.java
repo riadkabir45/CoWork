@@ -20,4 +20,5 @@ public class TaskInstanceDTO {
     private TaskIntervalType taskIntervalType;
     private String userId;
     private Set<String> taskUpdates;
+    private int taskStreak;
 }

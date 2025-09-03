@@ -1,5 +1,6 @@
 package com.aritra.d.riad.CoWork.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,14 @@ public class TaskUpdatesService {
         TaskUpdates taskUpdates = new TaskUpdates();
         taskUpdates.setTaskInstances(taskInstances);
         taskUpdates.setUpdateDescription(updateDescription);
+        return createTaskUpdate(taskUpdates);
+    }
+
+    public TaskUpdates createTaskUpdates(TaskInstances taskInstances, String updateDescription,LocalDateTime timestamp) {
+        TaskUpdates taskUpdates = new TaskUpdates();
+        taskUpdates.setTaskInstances(taskInstances);
+        taskUpdates.setUpdateDescription(updateDescription);
+        taskUpdates.setUpdateTimestamp(timestamp);
         return createTaskUpdate(taskUpdates);
     }
 

@@ -28,6 +28,7 @@ public class TaskInstances {
     private int taskInterval;
     private TaskIntervalType taskIntervalType;
     private String userId;
+    private int taskStreak = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Tasks task;

@@ -228,6 +228,7 @@ public class UserService {
 
     public Users createUser(SupabaseUserDTO dto) {
         Users user = new Users();
+        user.setAuthId(dto.getId());
         user.setEmail(dto.getEmail());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());

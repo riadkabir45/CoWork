@@ -25,4 +25,5 @@ public class TaskUpdates {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private TaskInstances taskInstances;
+
 }
