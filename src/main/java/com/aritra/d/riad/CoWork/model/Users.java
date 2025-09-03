@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -17,7 +16,7 @@ import java.util.UUID;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
     private String authId;
 
     @Column(name = "google_id")
@@ -94,14 +93,14 @@ public class Users {
     }
 
     public Users(String id,String email, String firstName, String lastName) {
-        this.id = UUID.fromString(id);
+        this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
     public Users(SupabaseUserDTO dto) {
-        this.id = UUID.fromString(dto.getId());
+        this.id = dto.getId();
         this.email = dto.getEmail();
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();

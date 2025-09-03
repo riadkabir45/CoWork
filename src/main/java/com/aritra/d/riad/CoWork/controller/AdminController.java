@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,7 +87,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> promoteToMentor(@RequestBody Map<String, String> request) {
         try {
-            UUID userId = UUID.fromString(request.get("userId"));
+            String userId = request.get("userId");
             Users updatedUser = userService.promoteToMentor(userId);
             
             return ResponseEntity.ok(Map.of(
@@ -112,7 +111,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> assignModerator(@RequestBody Map<String, String> request) {
         try {
-            UUID userId = UUID.fromString(request.get("userId"));
+            String userId = request.get("userId");
             Users updatedUser = userService.assignModerator(userId);
             
             return ResponseEntity.ok(Map.of(
@@ -135,7 +134,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> removeModerator(@RequestBody Map<String, String> request) {
         try {
-            UUID userId = UUID.fromString(request.get("userId"));
+            String userId = request.get("userId");
             Users updatedUser = userService.removeModerator(userId);
             
             return ResponseEntity.ok(Map.of(
