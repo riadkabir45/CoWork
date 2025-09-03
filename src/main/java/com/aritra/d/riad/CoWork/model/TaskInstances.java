@@ -1,9 +1,11 @@
 package com.aritra.d.riad.CoWork.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,6 @@ public class TaskInstances {
     @ManyToOne(fetch = FetchType.LAZY)
     private Tasks task;
 
-    @OneToMany(mappedBy = "taskInstances", fetch = FetchType.LAZY)
-    private List<TaskUpdates> taskUpdates;
+    @OneToMany(mappedBy = "taskInstances",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<TaskUpdates> taskUpdates = new ArrayList<>();
 }

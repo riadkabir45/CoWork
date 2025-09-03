@@ -3,6 +3,7 @@ package com.aritra.d.riad.CoWork.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.aritra.d.riad.CoWork.model.Notification;
@@ -49,7 +50,7 @@ public class NotificationService {
             notification.setMessage(message);
             notification.setTitle(title);
             return notificationRepository.save(notification);
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             log.error("Duplicate notification for user: {}", user.getEmail());
         }
         return null;

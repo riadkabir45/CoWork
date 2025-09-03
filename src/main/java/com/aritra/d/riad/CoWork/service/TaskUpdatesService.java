@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aritra.d.riad.CoWork.dto.TaskUpdateDTO;
@@ -12,12 +13,18 @@ import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.TaskUpdates;
 import com.aritra.d.riad.CoWork.repository.TaskUpdatesRepository;
 
-@Component
+import lombok.extern.slf4j.Slf4j;
+
+@Service
 @Transactional
+@Slf4j
 public class TaskUpdatesService {
 
     @Autowired
     private TaskUpdatesRepository taskUpdatesRepository;
+
+    @Autowired
+    private TaskInstanceService taskInstanceService;
 
     public List<TaskUpdates> getAllTaskUpdates() {
         return taskUpdatesRepository.findAll();
@@ -31,6 +38,7 @@ public class TaskUpdatesService {
         TaskUpdates taskUpdates = new TaskUpdates();
         taskUpdates.setTaskInstances(taskInstances);
         taskUpdates.setUpdateDescription(updateDescription);
+        
         return createTaskUpdate(taskUpdates);
     }
 
@@ -43,7 +51,8 @@ public class TaskUpdatesService {
     }
 
     public TaskUpdates createTaskUpdate(TaskUpdates taskUpdate) {
-        return taskUpdatesRepository.save(taskUpdate);
+        TaskUpdates existing = taskUpdatesRepository.save(taskUpdate);
+        return existing;
     }
 
     public void deleteTaskUpdate(String id) {
