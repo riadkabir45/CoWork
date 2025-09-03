@@ -59,6 +59,10 @@ public class TaskInstancesController {
 
     @GetMapping("/userEmail/{email}")
     public List<TaskInstanceDTO> getTaskInstancesByUserEmail(@PathVariable String email) {
-        return taskInstanceService.generateTaskInstanceDTOList(taskInstanceService.listTaskInstancesByUserEmail(email));
+        List<TaskInstances> taskInstances = taskInstanceService.listTaskInstancesByUserEmail(email);
+        for (TaskInstances taskInstance : taskInstances) {
+            taskInstanceService.calculateTaskStreak(taskInstance);
+        }
+        return taskInstanceService.generateTaskInstanceDTOList(taskInstances);
     }
 }
