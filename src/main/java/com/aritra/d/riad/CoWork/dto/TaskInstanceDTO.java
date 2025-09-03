@@ -1,6 +1,7 @@
 package com.aritra.d.riad.CoWork.dto;
 
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 
@@ -16,9 +17,11 @@ import lombok.Setter;
 public class TaskInstanceDTO {
     private String id;
     private String task;
+    private boolean isNumerical;
     private int taskInterval;
     private TaskIntervalType taskIntervalType;
-    private String userId;
-    private Set<String> taskUpdates;
+    private String email;
+    private List<String> taskUpdates;
     private int taskStreak;
+    private LocalDateTime lastUpdated;
 }

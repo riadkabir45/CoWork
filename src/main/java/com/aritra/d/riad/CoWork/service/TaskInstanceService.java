@@ -1,6 +1,7 @@
 package com.aritra.d.riad.CoWork.service;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aritra.d.riad.CoWork.dto.TaskInstanceDTO;
-import com.aritra.d.riad.CoWork.dto.TaskStatusDTO;
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.TaskUpdates;
@@ -26,6 +26,12 @@ public class TaskInstanceService {
 
     @Autowired
     private TaskInstancesRepository taskInstancesRepository;
+
+    @Autowired
+    private TasksService tasksService;
+
+    @Autowired
+    private UserService usersService;
 
     public TaskInstances createTaskInstances(int taskInterval, TaskIntervalType taskIntervalType, Users user, Tasks task) {
         TaskInstances taskInstance = new TaskInstances();
@@ -62,50 +68,35 @@ public class TaskInstanceService {
     }
 
     public TaskInstanceDTO generateTaskInstanceDTO(TaskInstances taskInstance) {
-    TaskInstanceDTO dto = new TaskInstanceDTO();
+        log.info("Generating TaskInstanceDTO for TaskInstance ID: " + taskInstance);    
+        TaskInstanceDTO dto = new TaskInstanceDTO();
         dto.setId(taskInstance.getId());
-        dto.setId(taskInstance.getTask().getId());
+        dto.setTask(taskInstance.getTask().getTaskName());
         dto.setTaskInterval(taskInstance.getTaskInterval());
         dto.setTaskIntervalType(taskInstance.getTaskIntervalType());
-        dto.setUserId(taskInstance.getUser().getId());
+        dto.setNumerical(taskInstance.getTask().isNumericalTask());
+        dto.setEmail(taskInstance.getUser().getEmail());
+        dto.setLastUpdated(taskInstance.getTaskUpdates().isEmpty() ? null : taskInstance.getTaskUpdates().get(taskInstance.getTaskUpdates().size() - 1).getUpdateTimestamp());
         dto.setTaskUpdates(taskInstance.getTaskUpdates().stream()
-            .map(update -> update.getId())
-            .collect(Collectors.toSet()));
+            .map(update -> update.getUpdateDescription())
+            .collect(Collectors.toList()));
         dto.setTaskStreak(taskInstance.getTaskStreak());
         return dto;
+    }
+
+    public TaskInstances createTaskInstance(TaskInstanceDTO dto, Users user){
+        TaskInstances taskInstance = new TaskInstances();
+        taskInstance.setTask(tasksService.getTaskById(dto.getTask()));
+        taskInstance.setTaskInterval(dto.getTaskInterval());
+        taskInstance.setTaskIntervalType(dto.getTaskIntervalType());
+        taskInstance.setUser(user);
+        taskInstance.setTaskUpdates(new ArrayList<TaskUpdates>());
+        return createTaskInstance(taskInstance);
     }
 
     public List<TaskInstanceDTO> generateTaskInstanceDTOList(List<TaskInstances> taskInstances) {
         return taskInstances.stream()
             .map(this::generateTaskInstanceDTO)
-            .collect(Collectors.toList());
-    }
-
-    public TaskStatusDTO generateTaskStatusDTO(TaskInstances taskInstance) {
-        int streak = calculateTaskStreak(taskInstance);
-        TaskStatusDTO dto = new TaskStatusDTO();
-        dto.setId(taskInstance.getId());
-        dto.setName(taskInstance.getTask().getTaskName());
-        if(taskInstance.getTask().isNumericalTask())
-            dto.setTaskType("Number");
-        else
-            dto.setTaskType("Yes/No");
-        dto.setInterval(taskInstance.getTaskInterval());
-        dto.setTaskStreak(streak);
-        dto.setIntervalType(taskInstance.getTaskIntervalType().toString());
-        if(taskInstance.getTaskUpdates().size() > 0)
-            dto.setLastUpdated(taskInstance.getTaskUpdates().get(taskInstance.getTaskUpdates().size() - 1).getUpdateTimestamp());
-        else
-            dto.setLastUpdated(null);
-        dto.setUpdates(taskInstance.getTaskUpdates().stream()
-            .map(update -> update.getUpdateDescription())
-            .collect(Collectors.toList()));
-        return dto;
-    }
-
-    public List<TaskStatusDTO> generateTaskStatusDTOList(List<TaskInstances> taskInstances) {
-        return taskInstances.stream()
-            .map(this::generateTaskStatusDTO)
             .collect(Collectors.toList());
     }
 
