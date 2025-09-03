@@ -15,5 +15,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
     List<Notification> findByRecipientAndRead(Users user, boolean read);
     long countByRecipient(Users user);
     long countByRecipientAndRead(Users user, boolean read);
-
+    List<Notification> findByRead(boolean read);
 }
