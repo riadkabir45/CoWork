@@ -8,4 +8,5 @@ import com.aritra.d.riad.CoWork.model.TaskInstances;
 @Repository
 public interface TaskInstancesRepository extends JpaRepository<TaskInstances, String> {
     java.util.List<TaskInstances> findByUserId(String userId);
+    java.util.List<TaskInstances> findByUserEmail(String email);
 }

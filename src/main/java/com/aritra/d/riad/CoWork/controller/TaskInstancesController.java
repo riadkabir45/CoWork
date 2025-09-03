@@ -47,8 +47,8 @@ public class TaskInstancesController {
         taskInstanceService.deleteTaskInstance(id);
     }
 
-    @GetMapping("/userId/{id}")
-    public List<TaskStatusDTO> getTaskInstancesByUserId(@PathVariable String id) {
-        return taskInstanceService.generateTaskStatusDTOList(taskInstanceService.listTaskInstancesByUserId(id));
+    @GetMapping("/userEmail/{email}")
+    public List<TaskStatusDTO> getTaskInstancesByUserEmail(@PathVariable String email) {
+        return taskInstanceService.generateTaskStatusDTOList(taskInstanceService.listTaskInstancesByUserEmail(email));
     }
 }

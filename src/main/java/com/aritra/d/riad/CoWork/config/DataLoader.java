@@ -103,7 +103,7 @@ public class DataLoader implements CommandLineRunner {
         notificationService.sendNotification(riad, "New connection", "You are now connected with " + ruby.getFullName());
 
         Tasks task = taskService.createTask("Sample Task", true);
-        TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad.getAuthId(), task);
+        TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad, task);
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(15));
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(7));
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(3));
