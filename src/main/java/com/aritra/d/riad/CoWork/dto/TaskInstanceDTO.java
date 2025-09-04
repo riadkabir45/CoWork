@@ -17,6 +17,7 @@ import lombok.Setter;
 public class TaskInstanceDTO {
     private String id;
     private String task;
+    private String taskId;
     private boolean isNumerical;
     private int taskInterval;
     private TaskIntervalType taskIntervalType;
@@ -24,4 +25,5 @@ public class TaskInstanceDTO {
     private List<String> taskUpdates;
     private int taskStreak;
     private LocalDateTime lastUpdated;
+    private int rank;
 }

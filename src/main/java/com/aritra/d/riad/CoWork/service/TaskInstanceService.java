@@ -30,9 +30,6 @@ public class TaskInstanceService {
     @Autowired
     private TasksService tasksService;
 
-    @Autowired
-    private UserService usersService;
-
     public TaskInstances createTaskInstances(int taskInterval, TaskIntervalType taskIntervalType, Users user, Tasks task) {
         TaskInstances taskInstance = new TaskInstances();
         taskInstance.setTaskInterval(taskInterval);
@@ -67,10 +64,23 @@ public class TaskInstanceService {
         return taskInstancesRepository.findByUserEmail(email);
     }
 
+    public List<TaskInstances> getSortedTaskInstancesByTask(Tasks task) {
+        List<TaskInstances> instances = taskInstancesRepository.findByTaskOrderByTaskStreakDesc(task);
+        for (TaskInstances instance : instances) {
+            instance.setTaskStreak(calculateTaskStreak(instance));
+        }
+        return instances;
+    }
+
+    public List<TaskInstanceDTO> getSortedTaskInstancesByTaskDTO(Tasks task) {
+        return generateTaskInstanceDTOList(getSortedTaskInstancesByTask(task));
+    }
+
     public TaskInstanceDTO generateTaskInstanceDTO(TaskInstances taskInstance) {
         log.info("Generating TaskInstanceDTO for TaskInstance ID: " + taskInstance);    
         TaskInstanceDTO dto = new TaskInstanceDTO();
         dto.setId(taskInstance.getId());
+        dto.setTaskId(taskInstance.getTask().getId());
         dto.setTask(taskInstance.getTask().getTaskName());
         dto.setTaskInterval(taskInstance.getTaskInterval());
         dto.setTaskIntervalType(taskInstance.getTaskIntervalType());
@@ -172,5 +182,18 @@ public class TaskInstanceService {
         }
         log.info("Calculated task streak for task instance " + taskInstance.getId() + ": " + streak);
         return streak;
+    }
+
+    public List<TaskInstanceDTO> getUserRankings(Users user) {
+        List<TaskInstances> userTaskInstances = listTaskInstancesByUserId(user.getId());
+        List<TaskInstanceDTO> rankings = new ArrayList<>();
+        for (TaskInstances taskInstance : userTaskInstances) {
+            List<TaskInstances> sortedInstances = getSortedTaskInstancesByTask(taskInstance.getTask());
+            int rank = sortedInstances.indexOf(taskInstance) + 1;
+            TaskInstanceDTO dto = generateTaskInstanceDTO(taskInstance);
+            dto.setRank(rank);
+            rankings.add(dto);
+        }
+        return rankings;
     }
 }
