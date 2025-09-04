@@ -97,6 +97,10 @@ public class DataLoader implements CommandLineRunner {
         userService.createUser("revere@example.com", "Revere", "Thee");
 
         Users riad = userService.findByEmail("riadkabir45@gmail.com").orElseThrow();
+        Users aritra = userService.findByEmail("aritra.chakraborty@g.bracu.ac.bd").orElseThrow();
+
+        userService.assignAdmin(riad.getId());
+        userService.assignAdmin(aritra.getId());
 
         Tasks task = taskService.createTask("Sample Task", true);
         TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad, task);

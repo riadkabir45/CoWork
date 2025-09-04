@@ -105,6 +105,30 @@ public class AdminController {
     }
     
     /**
+     * Demote user from mentor (accessible by admins and moderators)
+     */
+    @PostMapping("/demote-mentor")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> demoteFromMentor(@RequestBody Map<String, String> request) {
+        try {
+            String userId = request.get("userId");
+            Users updatedUser = userService.demoteFromMentor(userId);
+
+            return ResponseEntity.ok(Map.of(
+                "message", "User demoted from mentor successfully",
+                "user", Map.of(
+                    "id", updatedUser.getId(),
+                    "email", updatedUser.getEmail(),
+                    "primaryRole", updatedUser.getPrimaryRole(),
+                    "mentorshipEligible", updatedUser.getMentorshipEligible()
+                )
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
      * Assign moderator role to user (admin only)
      */
     @PostMapping("/assign-moderator")

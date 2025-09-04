@@ -152,6 +152,24 @@ public class UserService {
     }
     
     /**
+     * Promote user to mentor role
+     */
+    public Users demoteFromMentor(String userId) {
+        Optional<Users> userOpt = usersRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        
+        Users user = userOpt.get();
+        Set<Role> roles = new HashSet<>(user.getRoles());
+        roleRepository.findByName("MENTOR").ifPresent(roles::remove);
+        user.setRoles(roles);
+        user.setMentorshipEligible(false);
+        
+        return usersRepository.save(user);
+    }
+    
+    /**
      * Assign moderator role to user (admin only)
      */
     public Users assignModerator(String userId) {
