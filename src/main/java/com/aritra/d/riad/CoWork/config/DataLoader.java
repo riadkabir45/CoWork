@@ -98,16 +98,17 @@ public class DataLoader implements CommandLineRunner {
 
         Users riad = userService.findByEmail("riadkabir45@gmail.com").orElseThrow();
 
-        connectionService.createConnection(ruby, riad);
-
-        notificationService.sendNotification(riad, "New connection", "You are now connected with " + ruby.getFullName());
-
         Tasks task = taskService.createTask("Sample Task", true);
         TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad, task);
+        TaskInstances taskInstance2 = taskInstanceService.createTaskInstances(20, TaskIntervalType.HOURS, ruby, task);
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(15));
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(7));
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(3));
         taskUpdatesService.createTaskUpdates(taskInstance, "1");
+        taskUpdatesService.createTaskUpdates(taskInstance2, "10",LocalDateTime.now().minusHours(8));
+        taskUpdatesService.createTaskUpdates(taskInstance2, "10",LocalDateTime.now().minusHours(5));
+        taskUpdatesService.createTaskUpdates(taskInstance2, "10",LocalDateTime.now().minusHours(1));
+        taskUpdatesService.createTaskUpdates(taskInstance2, "1");
 
     }
 

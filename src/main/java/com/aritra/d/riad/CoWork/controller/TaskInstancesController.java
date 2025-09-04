@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aritra.d.riad.CoWork.dto.TaskInstanceDTO;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.service.TaskInstanceService;
+import com.aritra.d.riad.CoWork.service.TasksService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,8 @@ public class TaskInstancesController {
     private TaskInstanceService taskInstanceService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TasksService tasksService;
 
     @GetMapping
     public List<TaskInstanceDTO> getAllTaskInstances() {
@@ -60,5 +63,15 @@ public class TaskInstancesController {
     @GetMapping("/userEmail/{email}")
     public List<TaskInstanceDTO> getTaskInstancesByUserEmail(@PathVariable String email) {
         return taskInstanceService.generateTaskInstanceDTOList(taskInstanceService.listTaskInstancesByUserEmail(email));
+    }
+
+    @GetMapping("/taskBoard/{id}")
+    public List<TaskInstanceDTO> getTaskBoard(@PathVariable String id) {
+        return taskInstanceService.getSortedTaskInstancesByTaskDTO(tasksService.getTaskById(id));
+    }
+
+    @GetMapping("/userRankings")
+    public List<TaskInstanceDTO> getUserRankings() {
+        return taskInstanceService.getUserRankings(userService.authUser());
     }
 }
