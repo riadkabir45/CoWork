@@ -94,6 +94,26 @@ public class TaskFeedbackController {
         return ResponseEntity.ok(comment);
     }
 
+    // New endpoints for task-level comments (across all instances)
+    @GetMapping("/comments/task/{taskId}")
+    public ResponseEntity<List<TaskCommentDTO>> getCommentsForTask(
+            @PathVariable String taskId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var currentUser = userService.findByEmail(auth.getName()).orElseThrow();
+
+        if (page >= 0 && size > 0) {
+            Page<TaskCommentDTO> commentPage = taskCommentService.getCommentsForTaskWithPagination(
+                    taskId, currentUser, page, size);
+            return ResponseEntity.ok(commentPage.getContent());
+        } else {
+            List<TaskCommentDTO> comments = taskCommentService.getCommentsForTask(taskId, currentUser);
+            return ResponseEntity.ok(comments);
+        }
+    }
+
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<TaskCommentDTO> updateComment(
             @PathVariable String commentId,
@@ -159,6 +179,15 @@ public class TaskFeedbackController {
         var currentUser = userService.findByEmail(auth.getName()).orElseThrow();
 
         TaskFeedbackStatsDTO stats = taskReactionService.getTaskInstanceFeedbackStats(taskInstanceId, currentUser);
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/stats/task/{taskId}")
+    public ResponseEntity<TaskFeedbackStatsDTO> getTaskFeedbackStats(@PathVariable String taskId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        var currentUser = userService.findByEmail(auth.getName()).orElseThrow();
+
+        TaskFeedbackStatsDTO stats = taskReactionService.getTaskFeedbackStats(taskId, currentUser);
         return ResponseEntity.ok(stats);
     }
 

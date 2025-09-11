@@ -132,6 +132,33 @@ public class TaskCommentService {
         return convertToDTO(comment, currentUser);
     }
 
+    // New methods to get comments by task (across all instances)
+    public List<TaskCommentDTO> getCommentsForTask(String taskId, Users currentUser) {
+        List<TaskComment> topLevelComments = taskCommentRepository
+                .findByTaskIdAndParentCommentIsNullOrderByCreatedAtDesc(taskId);
+
+        return topLevelComments.stream()
+                .map(comment -> convertToDTO(comment, currentUser))
+                .collect(Collectors.toList());
+    }
+
+    public Page<TaskCommentDTO> getCommentsForTaskWithPagination(String taskId, Users currentUser, 
+                                                               int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TaskComment> commentPage = taskCommentRepository
+                .findByTaskIdAndParentCommentIsNullOrderByCreatedAtDesc(taskId, pageable);
+
+        return commentPage.map(comment -> convertToDTO(comment, currentUser));
+    }
+
+    public long getCommentCountForTask(String taskId) {
+        return taskCommentRepository.countByTaskId(taskId);
+    }
+
+    public long getTopLevelCommentCountForTask(String taskId) {
+        return taskCommentRepository.countByTaskIdAndParentCommentIsNull(taskId);
+    }
+
     public long getCommentCountForTaskInstance(String taskInstanceId) {
         TaskInstances taskInstance = taskInstancesRepository.findById(taskInstanceId)
                 .orElseThrow(() -> new RuntimeException("Task instance not found"));

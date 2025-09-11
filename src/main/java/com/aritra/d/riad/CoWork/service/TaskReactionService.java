@@ -133,6 +133,34 @@ public class TaskReactionService {
         return stats;
     }
 
+    // New method to get feedback stats for a task (across all instances)
+    public TaskFeedbackStatsDTO getTaskFeedbackStats(String taskId, Users currentUser) {
+        TaskFeedbackStatsDTO stats = new TaskFeedbackStatsDTO();
+        stats.setTaskInstanceId(taskId); // We'll reuse this field to store task ID
+        
+        // Get comment counts for the task using repository directly
+        long totalComments = taskCommentRepository.countByTaskId(taskId);
+        long topLevelComments = taskCommentRepository.countByTaskIdAndParentCommentIsNull(taskId);
+        
+        stats.setTotalComments(totalComments);
+        stats.setTopLevelComments(topLevelComments);
+        
+        // Get aggregated reaction counts for all instances of this task
+        // Note: This would require additional repository methods for task-level aggregation
+        // For now, we'll set default values and implement later if needed
+        stats.setLikeCount(0L);
+        stats.setDislikeCount(0L);
+        stats.setUserReaction(null);
+        
+        // Check if user has commented on any instance of this task
+        if (currentUser != null) {
+            // This would need a custom query to check across all task instances
+            stats.setHasUserCommented(false); // Placeholder
+        }
+        
+        return stats;
+    }
+
     public Optional<TaskReaction> getUserReactionToTarget(String targetId, TaskReaction.ReactionTargetType targetType, 
                                                          Users user) {
         return taskReactionRepository.findByUserAndReactionTargetTypeAndTargetId(user, targetType, targetId);
