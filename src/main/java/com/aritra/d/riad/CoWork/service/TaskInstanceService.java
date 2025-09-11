@@ -28,6 +28,9 @@ public class TaskInstanceService {
     private TaskInstancesRepository taskInstancesRepository;
 
     @Autowired
+    private TaskReactionService taskReactionService;
+
+    @Autowired
     private TasksService tasksService;
 
     public TaskInstances createTaskInstances(int taskInterval, TaskIntervalType taskIntervalType, Users user, Tasks task) {
@@ -77,6 +80,10 @@ public class TaskInstanceService {
     }
 
     public TaskInstanceDTO generateTaskInstanceDTO(TaskInstances taskInstance) {
+        return generateTaskInstanceDTO(taskInstance, null);
+    }
+
+    public TaskInstanceDTO generateTaskInstanceDTO(TaskInstances taskInstance, Users currentUser) {
         log.info("Generating TaskInstanceDTO for TaskInstance ID: " + taskInstance);    
         TaskInstanceDTO dto = new TaskInstanceDTO();
         dto.setId(taskInstance.getId());
@@ -91,6 +98,22 @@ public class TaskInstanceService {
             .map(update -> update.getUpdateDescription())
             .collect(Collectors.toList()));
         dto.setTaskStreak(calculateTaskStreak(taskInstance));
+
+        // Add feedback stats
+        dto.setCommentsCount(taskInstance.getCommentsCount());
+        dto.setLikeCount(taskInstance.getLikeCount());
+        dto.setDislikeCount(taskInstance.getDislikeCount());
+
+        // Get current user's reaction if provided
+        if (currentUser != null && taskReactionService != null) {
+            var userReaction = taskReactionService.getUserReactionToTarget(
+                taskInstance.getId(), 
+                com.aritra.d.riad.CoWork.model.TaskReaction.ReactionTargetType.TASK_INSTANCE, 
+                currentUser
+            );
+            dto.setUserReaction(userReaction.map(r -> r.getReactionType().toString()).orElse(null));
+        }
+
         return dto;
     }
 
