@@ -27,6 +27,22 @@ public interface TaskCommentRepository extends JpaRepository<TaskComment, String
     // Find all comments by a user for a specific task instance
     List<TaskComment> findByTaskInstanceAndAuthorOrderByCreatedAtDesc(TaskInstances taskInstance, com.aritra.d.riad.CoWork.model.Users author);
     
+    // Find all top-level comments for a task (across all instances)
+    @Query("SELECT c FROM TaskComment c WHERE c.taskInstance.task.id = :taskId AND c.parentComment IS NULL ORDER BY c.createdAt DESC")
+    List<TaskComment> findByTaskIdAndParentCommentIsNullOrderByCreatedAtDesc(@Param("taskId") String taskId);
+    
+    // Find all top-level comments for a task with pagination (across all instances)
+    @Query("SELECT c FROM TaskComment c WHERE c.taskInstance.task.id = :taskId AND c.parentComment IS NULL ORDER BY c.createdAt DESC")
+    Page<TaskComment> findByTaskIdAndParentCommentIsNullOrderByCreatedAtDesc(@Param("taskId") String taskId, Pageable pageable);
+    
+    // Count total comments for a task (across all instances, including replies)
+    @Query("SELECT COUNT(c) FROM TaskComment c WHERE c.taskInstance.task.id = :taskId")
+    long countByTaskId(@Param("taskId") String taskId);
+    
+    // Count top-level comments for a task (across all instances)
+    @Query("SELECT COUNT(c) FROM TaskComment c WHERE c.taskInstance.task.id = :taskId AND c.parentComment IS NULL")
+    long countByTaskIdAndParentCommentIsNull(@Param("taskId") String taskId);
+    
     // Count total comments for a task instance (including replies)
     long countByTaskInstance(TaskInstances taskInstance);
     
