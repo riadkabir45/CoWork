@@ -38,6 +38,9 @@ public class UserService {
     
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired
+    private com.aritra.d.riad.CoWork.repository.UserProfileRepository userProfileRepository;
 
     @Value("${app.supabase.url}")
     private String supabaseUrl;
@@ -322,6 +325,11 @@ public class UserService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setProfilePicture(user.getProfilePicture());
+        
+        // Check if user has a public profile
+        var profile = userProfileRepository.findByUserId(user.getId());
+        dto.setHasPublicProfile(profile.map(p -> p.isProfilePublic()).orElse(false));
+        
         return dto;
     }
 
