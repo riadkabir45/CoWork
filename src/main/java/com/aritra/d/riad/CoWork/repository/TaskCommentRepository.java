@@ -43,4 +43,8 @@ public interface TaskCommentRepository extends JpaRepository<TaskComment, String
     // Search comments by content
     @Query("SELECT c FROM TaskComment c WHERE LOWER(c.content) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY c.createdAt DESC")
     Page<TaskComment> searchByContent(@Param("searchTerm") String searchTerm, Pageable pageable);
+    
+    // Count comments by author
+    @Query("SELECT COUNT(c) FROM TaskComment c WHERE c.author.id = :authorId")
+    Long countByAuthorId(@Param("authorId") String authorId);
 }
