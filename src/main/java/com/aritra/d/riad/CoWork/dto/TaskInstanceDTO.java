@@ -26,4 +26,10 @@ public class TaskInstanceDTO {
     private int taskStreak;
     private LocalDateTime lastUpdated;
     private int rank;
+    
+    // Feedback system fields
+    private long commentsCount;
+    private long likeCount;
+    private long dislikeCount;
+    private String userReaction; // Current user's reaction: "LIKE", "DISLIKE", or null
 }
