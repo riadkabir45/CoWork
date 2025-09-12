@@ -60,6 +60,9 @@ public class MessageService {
         dto.setContent(message.getContent());
         dto.setSeen(message.isSeen());
         dto.setCreatedAt(message.getCreatedAt());
+        dto.setLastModified(message.getLastModified());
+        dto.setEdited(message.isEdited());
+        dto.setDeleted(message.isDeleted());
         return dto;
     }
 
@@ -121,6 +124,45 @@ public class MessageService {
         .values().stream()
         .flatMap(Optional::stream)
         .collect(Collectors.toList());
+    }
+
+    public MessageDTO editMessage(String messageId, String newContent, Users authUser) {
+        Message message = messageRepository.findById(messageId)
+            .orElseThrow(() -> new RuntimeException("Message not found"));
+        
+        // Check if the user is the sender of the message
+        if (!message.getSender().getId().equals(authUser.getId())) {
+            throw new RuntimeException("You can only edit your own messages");
+        }
+        
+        // Check if message is not deleted
+        if (message.isDeleted()) {
+            throw new RuntimeException("Cannot edit deleted message");
+        }
+        
+        message.setContent(newContent);
+        message.setEdited(true);
+        message.setLastModified(java.time.LocalDateTime.now());
+        
+        Message savedMessage = messageRepository.save(message);
+        return generMessageDTO(savedMessage);
+    }
+
+    public void deleteMessage(String messageId, Users authUser) {
+        Message message = messageRepository.findById(messageId)
+            .orElseThrow(() -> new RuntimeException("Message not found"));
+        
+        // Check if the user is the sender of the message
+        if (!message.getSender().getId().equals(authUser.getId())) {
+            throw new RuntimeException("You can only delete your own messages");
+        }
+        
+        // Soft delete: mark as deleted instead of actually deleting
+        message.setDeleted(true);
+        message.setContent("This message was deleted");
+        message.setLastModified(java.time.LocalDateTime.now());
+        
+        messageRepository.save(message);
     }
 
 }
