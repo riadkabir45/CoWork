@@ -12,4 +12,7 @@ public class MessageDTO {
     private String content;
     private boolean seen;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime lastModified;
+    private boolean isEdited = false;
+    private boolean isDeleted = false;
 }
