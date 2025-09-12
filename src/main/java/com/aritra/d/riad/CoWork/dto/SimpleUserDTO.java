@@ -9,4 +9,5 @@ public class SimpleUserDTO {
     private String firstName;
     private String lastName;
     private String profilePicture;
+    private boolean hasPublicProfile;
 }
