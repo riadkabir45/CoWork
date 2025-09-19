@@ -1,8 +1,10 @@
 package com.aritra.d.riad.CoWork.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,5 +111,29 @@ public class ConnectionController {
 
         connectionService.createConnection(authUser, targetUser);
         return ResponseEntity.ok().body("Connection request sent");
+    }
+
+    @PostMapping("/rate/{connectionId}")
+    public ResponseEntity<String> rateConnection(@PathVariable String connectionId, @RequestBody Map<String, Object> ratingData) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authUserEmail = authentication.getName();
+        var currentUser = userService.findByEmail(authUserEmail).orElseThrow();
+        
+        try {
+            Integer rating = (Integer) ratingData.get("rating");
+            String comment = (String) ratingData.get("comment");
+            
+            connectionService.rateConnectionUser(connectionId, currentUser, rating, comment);
+            
+            return ResponseEntity.ok().body("Rating submitted successfully");
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error processing rating", e);
+            return ResponseEntity.badRequest().body("Invalid rating data");
+        }
     }
 }

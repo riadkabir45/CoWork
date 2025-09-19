@@ -12,9 +12,11 @@ import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.ConnectionRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class ConnectionService {
     @Autowired
     private ConnectionRepository connectionRepository;
@@ -101,5 +103,43 @@ public class ConnectionService {
 
     public List<Connections> getPendingConnections() {
         return connectionRepository.findByAccepted(false);
+    }
+
+    public void rateConnectionUser(String connectionId, Users currentUser, Integer rating, String comment) {
+        // Get the connection
+        Connections connection = getConnectionById(connectionId);
+        if (connection == null) {
+            throw new IllegalArgumentException("Connection not found");
+        }
+        
+        // Verify that the current user is part of this connection
+        if (!connection.getSender().getId().equals(currentUser.getId()) && 
+            !connection.getReceiver().getId().equals(currentUser.getId())) {
+            throw new SecurityException("Access denied: User is not part of this connection");
+        }
+        
+        // Get the other user (the one being rated)
+        Users otherUser = connection.getSender().getId().equals(currentUser.getId()) 
+            ? connection.getReceiver() 
+            : connection.getSender();
+        
+        // Verify the other user is a mentor
+        if (!otherUser.hasRole("MENTOR")) {
+            throw new IllegalArgumentException("User is not a mentor");
+        }
+        
+        // Validate rating
+        if (rating == null || rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Invalid rating value");
+        }
+        
+        // Set the rating on the connection and save
+        connection.setRateing(rating);
+        connectionRepository.save(connection);
+        
+        log.info("Rating submitted: User {} rated mentor {} with {} stars. Comment: {}", 
+            currentUser.getEmail(), otherUser.getEmail(), rating, comment);
+        
+        // TODO: Save to mentor ratings table when implemented
     }
 }

@@ -27,6 +27,8 @@ public class Connections {
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    private int rateing = 0;
+
     @PreUpdate
     private void onPreUpdate() {
         updatedAt = LocalDateTime.now();

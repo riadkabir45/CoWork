@@ -306,8 +306,13 @@ public class UserService {
                 if (users.isArray()) {
                     for (JsonNode userNode : users) {
                         SupabaseUserDTO dto = mapper.treeToValue(userNode, SupabaseUserDTO.class);
-                        createUser(dto);
-                        log.info("Loaded user from Supabase: {} - {}", dto.getEmail(), dto.getFirstName() + " " + dto.getLastName());   
+                        // Check if user already exists before creating
+                        if (findByEmail(dto.getEmail()).isEmpty()) {
+                            createUser(dto);
+                            log.info("Loaded user from Supabase: {} - {}", dto.getEmail(), dto.getFirstName() + " " + dto.getLastName());
+                        } else {
+                            log.info("User already exists, skipping: {}", dto.getEmail());
+                        }
                     }
                 }
             } else {

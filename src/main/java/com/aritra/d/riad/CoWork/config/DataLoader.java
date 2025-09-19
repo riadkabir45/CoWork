@@ -92,15 +92,37 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public void loadUsers() {
-        userService.createUser("jan@example.com", "Jan", "Kowalski");
-        Users ruby = userService.createUser("ruby@example.com", "Ruby", "Smith");
-        userService.createUser("revere@example.com", "Revere", "Thee");
+        // Only create users if they don't already exist
+        if (userService.findByEmail("jan@example.com").isEmpty()) {
+            userService.createUser("jan@example.com", "Jan", "Kowalski");
+        }
+        
+        Users ruby;
+        if (userService.findByEmail("ruby@example.com").isEmpty()) {
+            ruby = userService.createUser("ruby@example.com", "Ruby", "Smith");
+        } else {
+            ruby = userService.findByEmail("ruby@example.com").orElseThrow();
+        }
+        
+        if (userService.findByEmail("revere@example.com").isEmpty()) {
+            userService.createUser("revere@example.com", "Revere", "Thee");
+        }
 
         Users riad = userService.findByEmail("riadkabir45@gmail.com").orElseThrow();
         Users aritra = userService.findByEmail("aritra.chakraborty@g.bracu.ac.bd").orElseThrow();
 
-        userService.assignAdmin(riad.getId());
-        userService.assignAdmin(aritra.getId());
+        // Only assign admin role if user doesn't already have it
+        if (!riad.hasRole("ADMIN")) {
+            userService.assignAdmin(riad.getId());
+        }
+        if (!aritra.hasRole("ADMIN")) {
+            userService.assignAdmin(aritra.getId());
+        }
+        
+        // Only make riad mentor if not already a mentor
+        if (!riad.hasRole("MENTOR")) {
+            userService.promoteToMentor(riad.getId());
+        }
 
         Tasks task = taskService.createTask("Sample Task", true);
         TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad, task);
