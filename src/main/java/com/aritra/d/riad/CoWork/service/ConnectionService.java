@@ -80,7 +80,13 @@ public class ConnectionService {
         dto.setReceiver(userService.generateSimpleUserDTO(connection.getReceiver()));
         dto.setAccepted(connection.isAccepted());
         dto.setUpDateTime(connection.getUpdatedAt());
-        return dto; 
+        Users authUser = userService.authUser();
+        if(authUser ==  connection.getReceiver()) {
+            dto.setMentor(connection.getSender().hasRole("MENTOR"));
+        } else {
+            dto.setMentor(connection.getReceiver().hasRole("MENTOR"));
+        }
+        return dto;
     }
 
     public List<Users> getAllConnectedUsers(Users recvUsers) {

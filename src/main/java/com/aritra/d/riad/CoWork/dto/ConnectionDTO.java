@@ -11,4 +11,5 @@ public class ConnectionDTO {
     SimpleUserDTO receiver;
     boolean accepted;
     LocalDateTime upDateTime;
+    boolean isMentor;
 }
