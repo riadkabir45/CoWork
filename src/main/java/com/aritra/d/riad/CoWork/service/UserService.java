@@ -388,6 +388,10 @@ public class UserService {
         return findByEmail(authUserEmail).orElseThrow();
     }
 
+    public String getCurrentUserId() {
+        return authUser().getId();
+    }
+
     /**
      * Get mentor leaderboard with aggregate ratings and task information
      * @param taskFilter Optional task ID to filter mentors by specific task

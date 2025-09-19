@@ -46,6 +46,10 @@ public class TasksService {
         return task.orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
+    public Optional<Tasks> findByTaskName(String taskName) {
+        return tasksRepository.findByTaskName(taskName);
+    }
+
     public void deleteTask(String id) {
         Tasks task = getTaskById(id);
         tasksRepository.delete(task);
