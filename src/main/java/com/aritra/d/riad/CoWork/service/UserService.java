@@ -1,11 +1,16 @@
 package com.aritra.d.riad.CoWork.service;
 
+import com.aritra.d.riad.CoWork.dto.MentorLeaderboardDTO;
 import com.aritra.d.riad.CoWork.dto.SimpleUserDTO;
 import com.aritra.d.riad.CoWork.dto.SupabaseUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
+import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.model.Role;
+import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.Users;
+import com.aritra.d.riad.CoWork.repository.ConnectionRepository;
 import com.aritra.d.riad.CoWork.repository.RoleRepository;
+import com.aritra.d.riad.CoWork.repository.TaskInstancesRepository;
 import com.aritra.d.riad.CoWork.repository.UsersRepository;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +22,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javax.tools.JavaFileObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +41,12 @@ public class UserService {
     
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired
+    private ConnectionRepository connectionRepository;
+    
+    @Autowired
+    private TaskInstancesRepository taskInstancesRepository;
     
     @Autowired
     private com.aritra.d.riad.CoWork.repository.UserProfileRepository userProfileRepository;
@@ -348,5 +357,136 @@ public class UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authUserEmail = authentication.getName();
         return findByEmail(authUserEmail).orElseThrow();
+    }
+
+    /**
+     * Get mentor leaderboard with aggregate ratings and task information
+     * @param taskFilter Optional task ID to filter mentors by specific task
+     * @return List of mentors with aggregate ratings and task info
+     */
+    public List<MentorLeaderboardDTO> getMentorLeaderboard(String taskFilter) {
+        // Get all mentors
+        List<Users> mentors = usersRepository.findAll().stream()
+                .filter(user -> user.hasRole("MENTOR"))
+                .collect(Collectors.toList());
+        
+        // Filter mentors by task if specified
+        if (taskFilter != null && !taskFilter.isEmpty()) {
+            mentors = mentors.stream()
+                    .filter(mentor -> {
+                        List<String> mentorTaskIds = getUserTaskIds(mentor);
+                        return mentorTaskIds.contains(taskFilter);
+                    })
+                    .collect(Collectors.toList());
+        }
+        
+        Users currentUser = authUser();
+        List<String> userTaskIds = getUserTaskIds(currentUser);
+        
+        return mentors.stream().map(mentor -> {
+            MentorLeaderboardDTO dto = new MentorLeaderboardDTO();
+            dto.setId(mentor.getId().toString());
+            dto.setEmail(mentor.getEmail());
+            dto.setFirstName(mentor.getFirstName());
+            dto.setLastName(mentor.getLastName());
+            dto.setProfilePicture(mentor.getProfilePicture());
+            
+            // Check if user has a public profile
+            var profile = userProfileRepository.findByUserId(mentor.getId());
+            dto.setHasPublicProfile(profile.map(p -> p.isProfilePublic()).orElse(false));
+            
+            // Get mentor's task information
+            List<String> mentorTaskIds = getUserTaskIds(mentor);
+            List<String> mentorTaskNames = getUserTaskNames(mentor);
+            dto.setTaskIds(mentorTaskIds);
+            dto.setTaskNames(mentorTaskNames);
+            
+            // Calculate aggregate ratings received by this mentor
+            // Since mentors can be either sender or receiver in connections,
+            // we need to check all connections where they are involved
+            List<Connections> allConnections = new ArrayList<>();
+            allConnections.addAll(connectionRepository.findByReceiver(mentor));
+            allConnections.addAll(connectionRepository.findBySender(mentor));
+            
+            // Extract ratings where this mentor was rated
+            // Note: Based on the UI logic, ratings are given to mentors by other users
+            // So we include all non-zero ratings from connections involving this mentor
+            List<Integer> ratings = allConnections.stream()
+                    .map(Connections::getRateing)
+                    .filter(rating -> rating != 0) // Exclude unrated connections
+                    .collect(Collectors.toList());
+            
+            int totalRatings = ratings.size();
+            int aggregateRating = ratings.stream().mapToInt(Integer::intValue).sum();
+            double averageRating = totalRatings > 0 ? (double) aggregateRating / totalRatings : 0.0;
+            int positiveRatings = (int) ratings.stream().filter(r -> r > 0).count();
+            int negativeRatings = (int) ratings.stream().filter(r -> r < 0).count();
+            
+            dto.setTotalRatings(totalRatings);
+            dto.setAggregateRating(aggregateRating);
+            dto.setAverageRating(averageRating);
+            dto.setPositiveRatings(positiveRatings);
+            dto.setNegativeRatings(negativeRatings);
+            
+            // Determine connection status between current user and this mentor
+            String connectionStatus = getConnectionStatus(currentUser, mentor);
+            dto.setConnectionStatus(connectionStatus);
+            
+            return dto;
+        })
+        .sorted((a, b) -> {
+            // Sort mentors with user's tasks first, then by aggregate rating
+            boolean aHasUserTasks = a.getTaskIds().stream().anyMatch(userTaskIds::contains);
+            boolean bHasUserTasks = b.getTaskIds().stream().anyMatch(userTaskIds::contains);
+            
+            if (aHasUserTasks && !bHasUserTasks) return -1;
+            if (!aHasUserTasks && bHasUserTasks) return 1;
+            
+            // Then sort by aggregate rating (descending)
+            return Integer.compare(b.getAggregateRating(), a.getAggregateRating());
+        })
+        .collect(Collectors.toList());
+    }
+    
+    private List<String> getUserTaskIds(Users user) {
+        return taskInstancesRepository.findByUserId(user.getId().toString()).stream()
+                .map(taskInstance -> taskInstance.getTask().getId())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
+    private List<String> getUserTaskNames(Users user) {
+        return taskInstancesRepository.findByUserId(user.getId().toString()).stream()
+                .map(taskInstance -> taskInstance.getTask().getTaskName())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get connection status between two users
+     * @param currentUser The authenticated user
+     * @param otherUser The other user (mentor)
+     * @return Connection status: "none", "pending_sent", "pending_received", "connected"
+     */
+    private String getConnectionStatus(Users currentUser, Users otherUser) {
+        // Don't allow connection to self
+        if (currentUser.getId().equals(otherUser.getId())) {
+            return "self";
+        }
+        
+        // Check if there's a connection where current user is sender
+        Connections sentConnection = connectionRepository.findBySenderAndReceiver(currentUser, otherUser);
+        // Check if there's a connection where current user is receiver
+        Connections receivedConnection = connectionRepository.findBySenderAndReceiver(otherUser, currentUser);
+        
+        if (sentConnection != null) {
+            return sentConnection.isAccepted() ? "connected" : "pending_sent";
+        }
+        
+        if (receivedConnection != null) {
+            return receivedConnection.isAccepted() ? "connected" : "pending_received";
+        }
+        
+        return "none";
     }
 }
