@@ -24,10 +24,19 @@ public class TasksService {
         Tasks task = new Tasks();
         task.setTaskName(taskName);
         task.setNumericalTask(isNumericalTask);
-        return createTask(task);
+        return createTaskInternal(task);
     }
 
     public Tasks createTask(Tasks task) {
+        // Validate that at least one tag is assigned for external API calls
+        if (task.getTags() == null || task.getTags().isEmpty()) {
+            throw new IllegalArgumentException("At least one tag is required to create a task");
+        }
+        
+        return createTaskInternal(task);
+    }
+    
+    public Tasks createTaskInternal(Tasks task) {
         tasksRepository.save(task);
         return task;
     }

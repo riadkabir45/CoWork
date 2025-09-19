@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,7 +89,14 @@ public class AdminController {
     public ResponseEntity<?> promoteToMentor(@RequestBody Map<String, String> request) {
         try {
             String userId = request.get("userId");
-            Users updatedUser = userService.promoteToMentor(userId);
+            
+            // Find the user first
+            Optional<Users> userOptional = userService.findById(userId);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
+            }
+            
+            Users updatedUser = userService.promoteToMentor(userOptional.get());
             
             return ResponseEntity.ok(Map.of(
                 "message", "User promoted to mentor successfully",

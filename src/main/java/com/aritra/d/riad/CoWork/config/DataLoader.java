@@ -1,6 +1,7 @@
 package com.aritra.d.riad.CoWork.config;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
+import com.aritra.d.riad.CoWork.model.Tag;
 import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.Tasks;
 import com.aritra.d.riad.CoWork.model.Users;
@@ -8,6 +9,7 @@ import com.aritra.d.riad.CoWork.service.ConnectionService;
 import com.aritra.d.riad.CoWork.service.NotificationService;
 import com.aritra.d.riad.CoWork.service.PermissionService;
 import com.aritra.d.riad.CoWork.service.RoleService;
+import com.aritra.d.riad.CoWork.service.TagService;
 import com.aritra.d.riad.CoWork.service.TaskInstanceService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
@@ -44,6 +46,8 @@ public class DataLoader implements CommandLineRunner {
     private TaskInstanceService taskInstanceService;
     @Autowired
     private TaskUpdatesService taskUpdatesService;
+    @Autowired
+    private TagService tagService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -51,6 +55,7 @@ public class DataLoader implements CommandLineRunner {
         loadRoles();
         userService.loadSupabaseUsers();
         loadUsers();
+        loadTestTags();
     }
     
     private void loadPermissions() {
@@ -124,7 +129,16 @@ public class DataLoader implements CommandLineRunner {
             userService.promoteToMentor(riad);
         }
 
+        // Create sample task first, then add test tag
         Tasks task = taskService.createTask("Sample Task", true);
+        
+        // Add the test tag to the existing task
+        tagService.getTagByName("test").ifPresent(testTag -> {
+            task.addTag(testTag);
+            // Save the task with the tag using the internal method that doesn't validate
+            taskService.createTaskInternal(task);
+            log.info("Assigned test tag to sample task");
+        });
         TaskInstances taskInstance = taskInstanceService.createTaskInstances(5, TaskIntervalType.HOURS, riad, task);
         TaskInstances taskInstance2 = taskInstanceService.createTaskInstances(20, TaskIntervalType.HOURS, ruby, task);
         taskUpdatesService.createTaskUpdates(taskInstance, "10",LocalDateTime.now().minusHours(15));
@@ -136,6 +150,27 @@ public class DataLoader implements CommandLineRunner {
         taskUpdatesService.createTaskUpdates(taskInstance2, "10",LocalDateTime.now().minusHours(1));
         taskUpdatesService.createTaskUpdates(taskInstance2, "1");
 
+    }
+    
+    private void loadTestTags() {
+        try {
+            // Get admin user to create tags as
+            Users adminUser = userService.findByEmail("riadkabir45@gmail.com").orElseThrow(
+                () -> new RuntimeException("Admin user not found: riadkabir45@gmail.com")
+            );
+            log.info("Found admin user: {}", adminUser.getEmail());
+            
+            // Create test tag if it doesn't already exist
+            if (tagService.getTagByName("test").isEmpty()) {
+                Tag testTag = tagService.createTag("test", "Test tag for development", "#3B82F6", adminUser);
+                log.info("Test tag created successfully with ID: {}, approved: {}", testTag.getId(), testTag.isApproved());
+            } else {
+                Tag existingTag = tagService.getTagByName("test").get();
+                log.info("Test tag already exists with ID: {}, approved: {}", existingTag.getId(), existingTag.isApproved());
+            }
+        } catch (Exception e) {
+            log.error("Error creating test tag: ", e);
+        }
     }
 
 }
