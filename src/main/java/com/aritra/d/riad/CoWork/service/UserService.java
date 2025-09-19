@@ -148,19 +148,30 @@ public class UserService {
     /**
      * Promote user to mentor role
      */
-    public Users promoteToMentor(String userId) {
-        Optional<Users> userOpt = usersRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new RuntimeException("User not found");
+    public Users promoteToMentor(Users user) {
+        if (user.hasRole("MENTOR")) {
+            log.info("User {} already has MENTOR role", user.getEmail());
+            return user;
         }
         
-        Users user = userOpt.get();
-        Set<Role> roles = new HashSet<>(user.getRoles());
-        roleRepository.findByName("MENTOR").ifPresent(roles::add);
-        user.setRoles(roles);
-        user.setMentorshipEligible(true);
+        Role mentorRole = roleRepository.findByName("MENTOR").orElse(null);
+        if (mentorRole == null) {
+            log.error("MENTOR role not found");
+            return user;
+        }
         
-        return usersRepository.save(user);
+        // Double check that the user doesn't already have this role
+        if (!user.getRoles().contains(mentorRole)) {
+            Set<Role> roles = new HashSet<>(user.getRoles());
+            roles.add(mentorRole);
+            user.setRoles(roles);
+            user.setMentorshipEligible(true);
+            
+            return usersRepository.save(user);
+        } else {
+            log.info("User {} already has MENTOR role (double check)", user.getEmail());
+            return user;
+        }
     }
     
     /**
@@ -225,11 +236,30 @@ public class UserService {
         }
         
         Users user = userOpt.get();
-        Set<Role> roles = new HashSet<>(user.getRoles());
-        roleRepository.findByName("ADMIN").ifPresent(roles::add);
-        user.setRoles(roles);
         
-        return usersRepository.save(user);
+        // Check if user already has ADMIN role
+        if (user.hasRole("ADMIN")) {
+            log.info("User {} already has ADMIN role", user.getEmail());
+            return user;
+        }
+        
+        Role adminRole = roleRepository.findByName("ADMIN").orElse(null);
+        if (adminRole == null) {
+            log.error("ADMIN role not found");
+            return user;
+        }
+        
+        // Double check that the user doesn't already have this role
+        if (!user.getRoles().contains(adminRole)) {
+            Set<Role> roles = new HashSet<>(user.getRoles());
+            roles.add(adminRole);
+            user.setRoles(roles);
+            
+            return usersRepository.save(user);
+        } else {
+            log.info("User {} already has ADMIN role (double check)", user.getEmail());
+            return user;
+        }
     }
     
     /**

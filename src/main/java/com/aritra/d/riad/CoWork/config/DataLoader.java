@@ -121,7 +121,7 @@ public class DataLoader implements CommandLineRunner {
         
         // Only make riad mentor if not already a mentor
         if (!riad.hasRole("MENTOR")) {
-            userService.promoteToMentor(riad.getId());
+            userService.promoteToMentor(riad);
         }
 
         Tasks task = taskService.createTask("Sample Task", true);
