@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DashboardUpdateDTO {
     private String id;
+    private String taskInstanceId; // Task instance ID for comments
     private String taskName;
     private String userName;
     private String updateText;

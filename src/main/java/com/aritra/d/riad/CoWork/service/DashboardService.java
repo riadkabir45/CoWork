@@ -104,6 +104,7 @@ public class DashboardService {
         
         TaskInstances taskInstance = update.getTaskInstances();
         if (taskInstance != null) {
+            dto.setTaskInstanceId(taskInstance.getId()); // Add task instance ID for comments
             Tasks task = taskInstance.getTask();
             Users user = taskInstance.getUser();
             
