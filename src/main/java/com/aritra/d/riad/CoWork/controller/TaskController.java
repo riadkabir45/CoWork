@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -205,6 +206,90 @@ public class TaskController {
     public ResponseEntity<List<Tag>> getTaskTags(@PathVariable String taskId) {
         List<Tag> tags = tagService.getTagsForTask(taskId);
         return ResponseEntity.ok(tags);
+    }
+
+    // =============== ADMIN TASK MANAGEMENT ENDPOINTS ===============
+
+    /**
+     * Update task name (admins/moderators only)
+     */
+    @PutMapping("/{taskId}/rename")
+    public ResponseEntity<?> renameTask(@PathVariable String taskId, @RequestBody Map<String, String> requestData) {
+        try {
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Users user = userService.findByEmail(userEmail).orElseThrow();
+            
+            // Check admin/moderator permissions
+            if (!user.hasRole("ADMIN") && !user.hasRole("MODERATOR")) {
+                return ResponseEntity.status(403).body(Map.of(
+                    "error", "Access Denied",
+                    "message", "Only admins and moderators can rename tasks"
+                ));
+            }
+            
+            String newName = requestData.get("newName");
+            if (newName == null || newName.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Validation Error",
+                    "message", "New task name is required"
+                ));
+            }
+            
+            Tasks task = taskService.getTaskById(taskId);
+            task.setTaskName(newName.trim());
+            taskService.createTaskInternal(task);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Task renamed successfully"
+            ));
+            
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Task Not Found",
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                "error", "Internal Server Error",
+                "message", "Failed to rename task"
+            ));
+        }
+    }
+
+    /**
+     * Delete task (admins only)
+     */
+    @DeleteMapping("/admin/{taskId}")
+    public ResponseEntity<?> adminDeleteTask(@PathVariable String taskId) {
+        try {
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            Users user = userService.findByEmail(userEmail).orElseThrow();
+            
+            // Check admin permissions
+            if (!user.hasRole("ADMIN")) {
+                return ResponseEntity.status(403).body(Map.of(
+                    "error", "Access Denied",
+                    "message", "Only admins can delete tasks"
+                ));
+            }
+            
+            taskService.deleteTask(taskId);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Task deleted successfully"
+            ));
+            
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Task Not Found",
+                "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                "error", "Internal Server Error",
+                "message", "Failed to delete task"
+            ));
+        }
     }
 
 }
