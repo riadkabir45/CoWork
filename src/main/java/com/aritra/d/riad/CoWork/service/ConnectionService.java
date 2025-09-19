@@ -82,6 +82,7 @@ public class ConnectionService {
         dto.setReceiver(userService.generateSimpleUserDTO(connection.getReceiver()));
         dto.setAccepted(connection.isAccepted());
         dto.setUpDateTime(connection.getUpdatedAt());
+        dto.setCurrentRating(connection.getRateing()); // Include the current rating
         Users authUser = userService.authUser();
         if(authUser ==  connection.getReceiver()) {
             dto.setMentor(connection.getSender().hasRole("MENTOR"));
@@ -128,9 +129,9 @@ public class ConnectionService {
             throw new IllegalArgumentException("User is not a mentor");
         }
         
-        // Validate rating
-        if (rating == null || rating < 1 || rating > 5) {
-            throw new IllegalArgumentException("Invalid rating value");
+        // Validate rating (-2 to 5 range)
+        if (rating == null || rating < -2 || rating > 5) {
+            throw new IllegalArgumentException("Invalid rating value. Rating must be between -2 and 5");
         }
         
         // Set the rating on the connection and save

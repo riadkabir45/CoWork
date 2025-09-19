@@ -12,4 +12,5 @@ public class ConnectionDTO {
     boolean accepted;
     LocalDateTime upDateTime;
     boolean isMentor;
+    int currentRating; // Current rating submitted by the authenticated user for this connection
 }
