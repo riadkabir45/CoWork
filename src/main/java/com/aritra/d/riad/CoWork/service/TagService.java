@@ -131,23 +131,35 @@ public class TagService {
      */
     @Transactional
     public TagSuggestion suggestNewTag(String name, String description, String reason, Users suggester) {
+        System.out.println("DEBUG: TagService.suggestNewTag called with name: " + name);
+        
         // Check if tag already exists
+        System.out.println("DEBUG: Checking if tag already exists...");
         if (tagRepository.existsByNameIgnoreCase(name)) {
+            System.out.println("DEBUG: Tag already exists with name: " + name);
             throw new IllegalArgumentException("Tag with name '" + name + "' already exists");
         }
+        System.out.println("DEBUG: Tag name is unique");
 
         // Check if user already has pending suggestion for this tag
+        System.out.println("DEBUG: Checking for pending suggestions by user...");
         if (tagSuggestionRepository.existsPendingSuggestionByUserAndName(suggester.getId(), name)) {
+            System.out.println("DEBUG: User already has pending suggestion for this tag");
             throw new IllegalArgumentException("You already have a pending suggestion for this tag name");
         }
+        System.out.println("DEBUG: No pending suggestions found");
 
+        System.out.println("DEBUG: Creating new TagSuggestion object...");
         TagSuggestion suggestion = new TagSuggestion();
         suggestion.setSuggestedName(name.toLowerCase().trim());
         suggestion.setDescription(description);
         suggestion.setReason(reason);
         suggestion.setSuggestedBy(suggester);
 
+        System.out.println("DEBUG: Saving TagSuggestion...");
         TagSuggestion savedSuggestion = tagSuggestionRepository.save(suggestion);
+        System.out.println("DEBUG: TagSuggestion saved with ID: " + savedSuggestion.getId());
+        
         log.info("New tag suggestion '{}' created by {}", name, suggester.getEmail());
         return savedSuggestion;
     }

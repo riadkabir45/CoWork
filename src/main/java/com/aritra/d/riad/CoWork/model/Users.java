@@ -2,6 +2,7 @@ package com.aritra.d.riad.CoWork.model;
 
 import com.aritra.d.riad.CoWork.dto.SupabaseUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +29,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"instances", "tags"})
 @ToString(exclude = {"instances", "tags"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Tasks {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

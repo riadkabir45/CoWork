@@ -106,31 +106,49 @@ public class TagController {
     @PostMapping("/suggest")
     public ResponseEntity<?> suggestNewTag(@RequestBody Map<String, String> request) {
         try {
+            System.out.println("DEBUG: Received new tag suggestion request: " + request);
+            
             String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            System.out.println("DEBUG: User email from auth: " + userEmail);
+            
             Users user = userService.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+                
+            System.out.println("DEBUG: Found user: " + user.getId());
 
             String name = request.get("name");
             String description = request.get("description");
             String reason = request.get("reason");
+            
+            System.out.println("DEBUG: Tag details - name: " + name + ", description: " + description + ", reason: " + reason);
 
             if (name == null || name.trim().isEmpty()) {
+                System.out.println("DEBUG: Tag name is null or empty");
                 return ResponseEntity.badRequest().body(Map.of("error", "Tag name is required"));
             }
 
             if (reason == null || reason.trim().isEmpty()) {
+                System.out.println("DEBUG: Reason is null or empty");
                 return ResponseEntity.badRequest().body(Map.of("error", "Reason for suggestion is required"));
             }
 
+            System.out.println("DEBUG: Calling tagService.suggestNewTag");
             TagSuggestion suggestion = tagService.suggestNewTag(name, description, reason, user);
+            System.out.println("DEBUG: Tag suggestion created successfully: " + suggestion.getId());
+            
             return ResponseEntity.ok(Map.of(
+                "success", true,
                 "message", "Tag suggestion submitted for review",
-                "suggestion", suggestion
+                "suggestionId", suggestion.getId(),
+                "suggestedName", suggestion.getSuggestedName()
             ));
 
         } catch (IllegalArgumentException e) {
+            System.out.println("DEBUG: IllegalArgumentException: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
+            System.out.println("DEBUG: Exception: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of("error", "Failed to submit suggestion"));
         }
     }
@@ -245,8 +263,9 @@ public class TagController {
 
             TaskTagSuggestion suggestion = tagService.suggestTagForTask(tagId, taskId, reason, user);
             return ResponseEntity.ok(Map.of(
+                "success", true,
                 "message", "Tag suggestion for task submitted for review",
-                "suggestion", suggestion
+                "suggestionId", suggestion.getId()
             ));
 
         } catch (IllegalArgumentException e) {

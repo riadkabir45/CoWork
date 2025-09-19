@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.aritra.d.riad.CoWork.enumurator.TaskIntervalType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TaskInstances {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

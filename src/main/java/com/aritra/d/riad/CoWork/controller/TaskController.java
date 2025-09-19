@@ -24,7 +24,7 @@ import com.aritra.d.riad.CoWork.service.TasksService;
 import com.aritra.d.riad.CoWork.service.UserService;
 
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired

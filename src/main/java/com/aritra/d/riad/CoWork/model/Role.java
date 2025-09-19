@@ -1,5 +1,6 @@
 package com.aritra.d.riad.CoWork.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

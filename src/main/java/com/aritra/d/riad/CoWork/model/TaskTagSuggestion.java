@@ -2,6 +2,7 @@ package com.aritra.d.riad.CoWork.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "task_tag_suggestions")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class TaskTagSuggestion {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,14 +27,17 @@ public class TaskTagSuggestion {
 
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "instances", "tags"})
     private Tasks task;
 
     @ManyToOne
     @JoinColumn(name = "suggested_tag_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Tag suggestedTag;
 
     @ManyToOne
     @JoinColumn(name = "suggested_by", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "roles"})
     private Users suggestedBy;
 
     @Column(length = 1000)
@@ -47,6 +52,7 @@ public class TaskTagSuggestion {
 
     @ManyToOne
     @JoinColumn(name = "reviewed_by")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "roles"})
     private Users reviewedBy;
 
     @Column(name = "reviewed_at")
