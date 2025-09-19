@@ -6,7 +6,6 @@ import com.aritra.d.riad.CoWork.dto.SupabaseUserDTO;
 import com.aritra.d.riad.CoWork.enumurator.UserStatus;
 import com.aritra.d.riad.CoWork.model.Connections;
 import com.aritra.d.riad.CoWork.model.Role;
-import com.aritra.d.riad.CoWork.model.TaskInstances;
 import com.aritra.d.riad.CoWork.model.Users;
 import com.aritra.d.riad.CoWork.repository.ConnectionRepository;
 import com.aritra.d.riad.CoWork.repository.RoleRepository;
