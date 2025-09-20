@@ -41,6 +41,12 @@ public class MessageController {
         return messageService.getMessagesByConnectionIdDTO(connectionId);
     }
 
+    @GetMapping("/{connectionId}/status")
+    public List<MessageDTO> getConnectionMessagesStatus(@PathVariable String connectionId) {
+        // Get messages without marking them as read - for status checking
+        return messageService.getMessagesByConnectionIdDTO(connectionId);
+    }
+
     @PostMapping
     public MessageDTO sendMessage(@RequestBody MessageDTO messageDTO) {
         log.info("Received message DTO: {}", messageDTO);
