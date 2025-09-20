@@ -3,7 +3,7 @@
 
 <div align="center">
 
-![CoWork Banner](https://via.placeholder.com/1200x300/4F46E5/FFFFFF?text=CoWork+-+Empowering+Collaboration)
+![CoWork Banner](banner.png)
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0+-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18.0+-blue.svg)](https://reactjs.org/)
@@ -14,7 +14,7 @@
 
 **A comprehensive social learning platform that combines task management, mentorship, and collaborative features to foster growth and productivity.**
 
-[🌟 Live Demo](https://cowork-demo.netlify.app) | [📖 Documentation](#documentation) | [🎥 Video Demo](#video-demo) | [🔧 Installation](#installation)
+[🌟 Live Demo](https://riadkabir45.github.io/CoWork) | [📖 Documentation](#documentation) | [🎥 Video Demo](#video-demo) | [🔧 Installation](#installation)
 
 </div>
 
